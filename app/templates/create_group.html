@@ -3,22 +3,41 @@
 
 {% block content %}
 <h1>新建单词组</h1>
+
+{% if success_message %}
+<div class="alert alert-success">{{ success_message }}</div>
+{% endif %}
+
+{% if error_lines %}
+<div class="alert alert-warning">
+    <p>以下行无法被解析为有效单词：</p>
+    <ul>
+        {% for line in error_lines %}
+        <li>{{ line }}</li>
+        {% endfor %}
+    </ul>
+    <p>正确格式示例: "English - 中文" 或 "English—中文"</p>
+</div>
+{% endif %}
+
 <div class="form-container">
     <form method="POST" class="styled-form">
         <div class="form-group">
             <label for="group_name">组别名称</label>
             <input type="text" id="group_name" name="group_name" required
-                class="form-control" placeholder="例如：生物学基础词汇">
+                class="form-control" placeholder="例如：生物学基础词汇" 
+                value="{{ group_name or '' }}">
         </div>
         
         <div class="form-group">
             <label for="words">单词列表</label>
-            <p class="form-hint">每行一个，格式：英文 - 中文</p>
+            <p class="form-hint">每行一个，格式：英文 - 中文<br>
+               <strong>支持带序号和格式标记的输入</strong>，如: "1. <strong>Word</strong> - 单词"</p>
             <textarea id="words" name="words" rows="15" required
                     class="form-control" placeholder="示例：
 Enzyme - 酶
 Protein - 蛋白质
-..."></textarea>
+...">{{ words_text or '' }}</textarea>
         </div>
         
         <div class="form-actions">

@@ -6,7 +6,8 @@ from app.utils.validation import validate_word_input
 groups_bp = Blueprint('groups', __name__)
 
 @groups_bp.route('/create', methods=['GET', 'POST'])
-def create_group():
+def create_group(word_processing_errors=None):
+    """创建新的单词组"""
     if request.method == 'POST':
         group_name = request.form.get('group_name')
         words_text = request.form.get('words')
@@ -16,31 +17,60 @@ def create_group():
             flash('组名和单词内容不能为空', 'danger')
             return redirect(url_for('groups.create_group'))
         
-        # 处理单词输入
-        words = []
-        for line in words_text.split('\n'):
-            line = line.strip()
-            if line:
+        # 创建新组别
+        group = WordGroup(name=group_name)
+        db.session.add(group)
+        
+        try:
+            db.session.flush()  # 获取组别ID但不提交
+            
+            # 解析并添加单词
+            word_count = 0
+            error_lines = []
+            
+            for line_number, line in enumerate(words_text.splitlines(), 1):
+                line = line.strip()
+                if not line:  # 跳过空行
+                    continue
+                    
                 eng, chn = validate_word_input(line)
                 if eng and chn:
-                    words.append(Word(english=eng, chinese=chn))
-        
-        # 创建组别
-        new_group = WordGroup(name=group_name)
-        new_group.words = words
-        new_group.stats = GroupStats()
-        
-        db.session.add(new_group)
-        try:
+                    word = Word(english=eng, chinese=chn, group_id=group.id)
+                    db.session.add(word)
+                    word_count += 1
+                else:
+                    error_lines.append(f"第 {line_number} 行: '{line}'")
+            
+            # 检查是否至少有一个有效单词
+            if word_count == 0:
+                db.session.rollback()
+                flash('未找到有效单词，请检查输入格式', 'danger')
+                return render_template('create_group.html', 
+                                      error_lines=error_lines,
+                                      group_name=group_name,
+                                      words_text=words_text)
+            
+            # 创建统计记录
+            stats = GroupStats(group_id=group.id)
+            db.session.add(stats)
+            
             db.session.commit()
-            flash('组别创建成功', 'success')
-            return redirect(url_for('main.index'))
-        except:
+            
+            if error_lines:
+                flash(f'创建成功，但有 {len(error_lines)} 行无法解析', 'warning')
+                return render_template('create_group.html', 
+                                      error_lines=error_lines,
+                                      success_message=f'已成功添加 {word_count} 个单词到组别 "{group_name}"')
+            else:
+                flash(f'创建成功！已添加 {word_count} 个单词', 'success')
+                return redirect(url_for('main.index'))
+                
+        except Exception as e:
             db.session.rollback()
-            flash('组别名称已存在', 'danger')
+            flash(f'创建失败: {str(e)}', 'danger')
+            return redirect(url_for('groups.create_group'))
     
     return render_template('create_group.html')
-
 @groups_bp.route('/<int:group_id>')
 def group_detail(group_id):
     group = WordGroup.query.get_or_404(group_id)
