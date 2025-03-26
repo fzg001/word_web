@@ -244,10 +244,6 @@ a.btn {
     gap: 20px;
 }
 
-.exit-action {
-    text-align: center;
-    margin: 30px 0;
-}
 
 /* 结果反馈样式改进 */
 .result-feedback {
@@ -458,4 +454,222 @@ tbody tr:last-child td {
     color: #333 !important;
     visibility: visible !important;
     opacity: 1 !important;
+}
+
+/* 卡片级别样式 - 只应用于首页卡片 */
+.group-list .bronze-card {
+    background: linear-gradient(145deg, #fff, #f5f3f0);
+    border: 2px solid #cd7f32 !important;
+    box-shadow: 0 4px 12px rgba(205, 127, 50, 0.15) !important;
+    position: relative;
+    overflow: hidden;
+    animation: bronze-pulse 3s infinite;
+}
+
+.group-list .gold-card {
+    background: linear-gradient(145deg, #fff7e6, #fffcf2);
+    border: 2px solid #ffd700 !important;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.25) !important;
+    position: relative;
+    overflow: hidden;
+    animation: gold-pulse 2.5s infinite;
+}
+
+.group-list .diamond-card {
+    background: linear-gradient(145deg, #e6f7ff, #f2fcff);
+    border: 2px solid #b9f2ff !important;
+    box-shadow: 0 6px 18px rgba(0, 191, 255, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+    animation: diamond-pulse 2s infinite;
+}
+
+/* 卡片动画效果 - 级别越高，动画效果越明显 */
+@keyframes bronze-pulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(205, 127, 50, 0.15);
+    }
+    50% {
+        box-shadow: 0 5px 15px rgba(205, 127, 50, 0.25);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(205, 127, 50, 0.15);
+    }
+}
+
+@keyframes gold-pulse {
+    0% {
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.25);
+        transform: translateY(-3px);
+    }
+    50% {
+        box-shadow: 0 7px 20px rgba(255, 215, 0, 0.35);
+        transform: translateY(-5px);
+    }
+    100% {
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.25);
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes diamond-pulse {
+    0% {
+        box-shadow: 0 6px 18px rgba(0, 191, 255, 0.3);
+        transform: translateY(-3px) scale(1);
+    }
+    50% {
+        box-shadow: 0 10px 25px rgba(0, 191, 255, 0.45);
+        transform: translateY(-7px) scale(1.02);
+    }
+    100% {
+        box-shadow: 0 6px 18px rgba(0, 191, 255, 0.3);
+        transform: translateY(-3px) scale(1);
+    }
+}
+
+/* 卡片徽章样式 */
+.card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.card-badge.bronze {
+    background-color: #cd7f32;
+    color: white;
+    box-shadow: 0 2px 4px rgba(205, 127, 50, 0.3);
+}
+
+.card-badge.gold {
+    background-color: #ffd700;
+    color: #7a5f00;
+    box-shadow: 0 2px 4px rgba(122, 95, 0, 0.3);
+}
+
+.card-badge.diamond {
+    background-color: #a5f3ff;
+    color: #0078a3;
+    box-shadow: 0 2px 4px rgba(0, 120, 163, 0.3);
+}
+
+/* 确保测试卡片样式优先级更高，防止级别样式影响其他页面 */
+.quiz-form .quiz-card,
+.study-card {
+    background: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+    position: static !important;
+    overflow: visible !important;
+    animation: none !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1) !important;
+    transform: none !important;
+}
+
+
+/* 悬浮消息提示样式 */
+.floating-alerts {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.floating-alert {
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slide-in 0.3s ease;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.floating-alert.fade-out {
+    opacity: 0;
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* 保持已有的警告颜色风格 */
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+    color: #856404;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+}
+
+/* 改进测试页面的按钮布局 */
+.quiz-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin: 25px auto;
+    flex-wrap: wrap; /* 在小屏幕上允许换行 */
+    width: 100%;
+    max-width: 600px;
+}
+
+/* 自定义表单验证气泡 */
+.input-error-bubble {
+    position: absolute;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    box-shadow: 0 2px 10px rgba(114, 28, 36, 0.15);
+    z-index: 100;
+    max-width: 250px;
+    animation: slide-in 0.3s ease;
+    border-left: 3px solid #721c24;
+}
+
+.input-error-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px; /* 箭头在底部 */
+    left: 15px;
+    border-width: 8px 8px 0 8px; /* 向下的箭头 */
+    border-style: solid;
+    border-color: #f8d7da transparent transparent transparent; /* 顶部边框颜色为气泡背景色 */
+}
+
+.form-group {
+    position: relative; /* 为错误提示气泡定位 */
+    margin-bottom: 25px;
 }

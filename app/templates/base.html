@@ -11,27 +11,77 @@
         <a href="{{ url_for('groups.create_group') }}">新建组别</a>
         <a href="{{ url_for('groups.manage_groups') }}">编辑组别</a>
     </nav>
+    
     <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <!-- 悬浮消息提示区域 -->
+    <div class="floating-alerts">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}" {% if message == '测试完成！' or message == '背诵完成！' %}id="test-complete-alert"{% endif %}>{{ message }}</div>
+                    <div class="alert alert-{{ category }} floating-alert {% if message == '测试完成！' or message == '背诵完成！' %}auto-dismiss{% endif %}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-        {% block content %}{% endblock %}
     </div>
+    
     {% block scripts %}{% endblock %}
     
     <script>
-        // 处理"测试完成！"消息自动消失
+        // 处理自动消失的消息
         document.addEventListener('DOMContentLoaded', function() {
-            const testCompleteAlert = document.getElementById('test-complete-alert');
-            if (testCompleteAlert) {
+            const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
+            autoDismissAlerts.forEach(function(alert) {
                 setTimeout(function() {
-                    testCompleteAlert.style.display = 'none';
-                }, 3000); // 3秒后自动隐藏
-            }
+                    alert.classList.add('fade-out');
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 300); // 淡出动画结束后移除元素
+                }, 3000); // 3秒后开始淡出
+            });
+
+            // 自定义表单验证
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.setAttribute('novalidate', '');
+                form.addEventListener('submit', function(event) {
+                    let hasError = false;
+                    const requiredInputs = form.querySelectorAll('[required]');
+                    
+                    // 移除所有现有错误提示
+                    const existingErrors = form.querySelectorAll('.input-error-bubble');
+                    existingErrors.forEach(error => error.remove());
+                    
+                    requiredInputs.forEach(input => {
+                        if (!input.value.trim()) {
+                            event.preventDefault();
+                            hasError = true;
+                            
+                            // 创建并添加错误气泡
+                            const errorBubble = document.createElement('div');
+                            errorBubble.className = 'input-error-bubble';
+                            errorBubble.textContent = '请填写此字段';
+                            
+                            // 查找父元素添加气泡
+                            const formGroup = input.closest('.form-group') || input.parentNode;
+                            formGroup.appendChild(errorBubble);
+                            
+                            // 聚焦到第一个错误输入
+                            if (hasError === true) {
+                                input.focus();
+                            }
+                            
+                            // 3秒后移除气泡
+                            setTimeout(() => {
+                                errorBubble.classList.add('fade-out');
+                                setTimeout(() => errorBubble.remove(), 300);
+                            }, 3000);
+                        }
+                    });
+                });
+            });
         });
     </script>
 </body>

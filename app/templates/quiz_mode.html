@@ -33,10 +33,10 @@
         {% if current_index == total_words %}
         <a href="{{ url_for('main.index') }}" class="btn btn-success">结束测试</a>
         {% endif %}
+        <a href="{{ url_for('practice.exit_quiz', group_id=group.id, mode=mode) }}" class="btn btn-danger">提前退出测试</a>
     </div>
 </form>
 
-<div class="exit-action">
-    <a href="{{ url_for('practice.exit_quiz', group_id=group.id, mode=mode) }}" class="btn btn-danger">提前退出测试</a>
-</div>
+
+
 {% endblock %}

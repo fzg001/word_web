@@ -5,7 +5,11 @@
 <h1>单词组列表</h1>
 <div class="group-list">
     {% for group in groups %}
-    <div class="group-card">
+    <div class="group-card 
+        {% if group.stats.random_last_score == 1.0 %}diamond-card
+        {% elif group.stats.last_score == 1.0 %}gold-card
+        {% elif group.stats.study_count >= 3 %}bronze-card
+        {% endif %}">
         <h2>{{ group.name }}</h2>
         <p>单词数量：{{ group.words.count() }}</p>
         <div class="stats">
@@ -18,6 +22,14 @@
             <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='order') }}" class="btn btn-primary">顺序测试</a>
             <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='random') }}" class="btn btn-primary">乱序测试</a>
         </div>
+        
+        {% if group.stats.random_last_score == 1.0 %}
+        <div class="card-badge diamond">钻石</div>
+        {% elif group.stats.last_score == 1.0 %}
+        <div class="card-badge gold">黄金</div>
+        {% elif group.stats.study_count >= 3 %}
+        <div class="card-badge bronze">青铜</div>
+        {% endif %}
     </div>
     {% endfor %}
 </div>
