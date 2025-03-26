@@ -22,5 +22,5 @@ class GroupStats(db.Model):
     order_quiz_count = db.Column(db.Integer, default=0)
     random_quiz_count = db.Column(db.Integer, default=0)
     last_score = db.Column(db.Float, default=0.0)  # 顺序测试正确率
-
+    random_last_score = db.Column(db.Float, default=0.0)  # 乱序测试正确率
 

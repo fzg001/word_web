@@ -98,6 +98,12 @@ def quiz_mode(group_id, mode):
         total = session[f'current_index_{mode}']
         accuracy = session[f'correct_count_{mode}'] / total if total > 0 else 0
         group.stats.last_score = accuracy
+        # 根据测试模式保存正确率
+        if mode == 'order':
+            group.stats.last_score = accuracy
+        else:  # 乱序模式
+            group.stats.random_last_score = accuracy
+
         db.session.commit()
 
         # 关键修改：提交后立即检查是否已经完成所有单词

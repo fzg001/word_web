@@ -11,6 +11,7 @@
         <div class="stats">
             <span>背诵次数：{{ group.stats.study_count }}</span>
             <span>顺序测试正确率：{{ "%.1f"|format(group.stats.last_score*100) }}%</span>
+            <span>乱序测试正确率：{{ "%.1f"|format((group.stats.random_last_score or 0)*100) }}%</span>
         </div>
         <div class="actions">
             <a href="{{ url_for('practice.study_mode', group_id=group.id) }}">背诵模式</a>
