@@ -727,3 +727,109 @@ nav a::after {
 nav a:hover::after {
     width: 100%;
 }
+
+
+/* 美化表单容器 */
+.form-container {
+    width: 100%;         /* 使用100%宽度而不是固定宽度 */
+    max-width: 100%;     /* 去掉最大宽度限制 */
+    margin: 0;           /* 取消居中对齐 */
+    padding: 0;          /* 移除内边距 */
+    background: transparent; /* 移除背景色 */
+    box-shadow: none;    /* 移除阴影 */
+}
+
+.styled-form {
+    background: white;
+    border-radius: var(--border-radius, 8px);
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;    /* 和标题保持一定距离 */
+}
+
+/* 美化表单字段和标签 */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.form-hint {
+    margin: 5px 0 10px;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #f9fafb;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color, #4285f4);
+    background-color: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.15);
+}
+
+/* 美化按钮区域 */
+.form-actions {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* 改进按钮样式 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--primary-color, #4285f4);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(66, 133, 244, 0.3);
+}
+
+.btn-primary:hover {
+    background: #3b78e7;
+    box-shadow: 0 4px 8px rgba(66, 133, 244, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: white;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+}
+
+.btn-secondary:hover {
+    background: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
