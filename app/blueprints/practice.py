@@ -69,14 +69,6 @@ def quiz_mode(group_id, mode):
     last_result_key = f'{session_key_prefix}last_result'
     correct_answer_key = f'{session_key_prefix}correct_answer'
     
-    # 强制重置会话
-    if request.args.get('force_reset') == '1':
-        keys_to_remove = [words_key, index_key, correct_count_key, last_result_key, correct_answer_key]
-        for key in keys_to_remove:
-            if key in session:
-                session.pop(key)
-        flash('会话已重置', 'info')
-    
     # 根据 group_id 获取 WordGroup 实例
     group = WordGroup.query.get_or_404(group_id)
 
