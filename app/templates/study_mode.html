@@ -33,7 +33,7 @@
                 下一个 <i class="nav-icon">→</i>
             </a>
         {% else %}
-            <a href="{{ url_for('main.index') }}" class="btn btn-success">完成背诵</a>
+            <a href="{{ url_for('practice.complete_study', group_id=group.id) }}" class="btn btn-success">完成背诵</a>
         {% endif %}
     </div>
 </div>

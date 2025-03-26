@@ -44,9 +44,15 @@ def study_mode(group_id):
     group = WordGroup.query.get_or_404(group_id)
     page = request.args.get('page', 1, type=int)
     
-    # 更新学习次数统计
-    group.stats.study_count += 1
-    db.session.commit()
+    # 创建组别特定的会话键
+    session_key = f'study_{group_id}_started'
+    complete_key = f'study_{group_id}_complete'
+    
+    # 首次进入背诵模式，设置标记但不增加计数
+    if page == 1 and session_key not in session:
+        session[session_key] = True
+        session[complete_key] = False
+        print(f"开始背诵组别: {group_id}")
     
     # 分页逻辑
     words = group.words.paginate(page=page, per_page=1)
@@ -54,11 +60,44 @@ def study_mode(group_id):
         flash('该组别没有单词', 'warning')
         return redirect(url_for('main.index'))
     
+    # 检查是否是最后一个单词
+    is_last_word = (page == words.total)
+    
     return render_template('study_mode.html',
                          group=group,
                          word=words.items[0],
                          current_index=page,
-                         total_words=words.total)
+                         total_words=words.total,
+                         is_last_word=is_last_word)
+
+
+# 添加完成背诵的路由
+@practice_bp.route('/complete_study/<int:group_id>')
+def complete_study(group_id):
+    """完成背诵，增加背诵次数"""
+    group = WordGroup.query.get_or_404(group_id)
+    
+    # 检查会话中的标记
+    session_key = f'study_{group_id}_started'
+    complete_key = f'study_{group_id}_complete'
+    
+    # 只有开始了背诵且尚未记录完成时才增加计数
+    if session.get(session_key) and not session.get(complete_key):
+        group.stats.study_count += 1
+        session[complete_key] = True
+        db.session.commit()
+        print(f"完成背诵组别: {group_id}, 当前背诵次数: {group.stats.study_count}")
+        flash('背诵完成！', 'success')
+    
+    # 清除会话标记
+    if session_key in session:
+        session.pop(session_key)
+    if complete_key in session:
+        session.pop(complete_key)
+    
+    return redirect(url_for('main.index'))
+
+
 @practice_bp.route('/quiz/<int:group_id>/<mode>', methods=['GET', 'POST'])
 def quiz_mode(group_id, mode):
     # 创建包含组别ID的会话键
