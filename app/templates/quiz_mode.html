@@ -4,7 +4,18 @@
 {% block content %}
 <div class="quiz-header">
     <h1>{{ group.name }} - {{ '乱序' if mode == 'random' else '顺序' }}测试</h1>
-    <p>当前进度：{{ current_index }}/{{ total_words }}</p>
+    
+    <!-- 新增的进度条UI -->
+    <div class="progress-container">
+        <div class="progress-info">
+            <div class="progress-label">测试进度</div>
+            <div class="progress-status">{{ current_index }}/{{ total_words }}</div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar active" style="width: {{ (current_index / total_words * 100)|round }}%;"></div>
+        </div>
+    </div>
+    
     {% if last_result is defined and last_result is not none %}
     <div class="result-feedback {{ 'correct' if last_result else 'wrong' }}">
         {% if last_result %}
@@ -36,7 +47,4 @@
         <a href="{{ url_for('practice.exit_quiz', group_id=group.id, mode=mode) }}" class="btn btn-danger">提前退出测试</a>
     </div>
 </form>
-
-
-
 {% endblock %}
