@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}背诵模式 - {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="study-header">
+    <h1>{{ group.name }} - 背诵模式</h1>
+    <p>当前进度：{{ current_index }}/{{ total_words }}</p>
+</div>
+
+<div class="study-card">
+    <div class="card-face">
+        <h2>{{ word.english }}</h2>
+    </div>
+    <div class="card-face">
+        <h2>{{ word.chinese }}</h2>
+    </div>
+</div>
+
+<div class="navigation">
+    {% if current_index > 1 %}
+    <a href="?page={{ current_index - 1 }}" class="btn">上一个</a>
+    {% endif %}
+    
+    {% if current_index < total_words %}
+    <a href="?page={{ current_index + 1 }}" class="btn">下一个</a>
+    {% else %}
+    <a href="{{ url_for('main.index') }}" class="btn btn-success">完成背诵</a>
+    {% endif %}
+</div>
+{% endblock %}

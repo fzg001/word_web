@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}单词组列表{% endblock %}
+
+{% block content %}
+<h1>单词组列表</h1>
+<div class="group-list">
+    {% for group in groups %}
+    <div class="group-card">
+        <h2>{{ group.name }}</h2>
+        <p>单词数量：{{ group.words.count() }}</p>
+        <div class="stats">
+            <span>背诵次数：{{ group.stats.study_count }}</span>
+            <span>顺序测试正确率：{{ "%.1f"|format(group.stats.last_score*100) }}%</span>
+        </div>
+        <div class="actions">
+            <a href="{{ url_for('practice.study_mode', group_id=group.id) }}">背诵模式</a>
+            <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='order') }}">顺序测试</a>
+            <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='random') }}">乱序测试</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

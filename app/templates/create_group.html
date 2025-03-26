@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}新建单词组{% endblock %}
+
+{% block content %}
+<h1>新建单词组</h1>
+<form method="POST">
+    <div class="form-group">
+        <label for="group_name">组别名称：</label>
+        <input type="text" id="group_name" name="group_name" required
+               class="form-control" placeholder="例如：生物学基础词汇">
+    </div>
+    
+    <div class="form-group">
+        <label for="words">单词列表（每行一个，格式：英文 - 中文）：</label>
+        <textarea id="words" name="words" rows="10" required
+                  class="form-control" placeholder="示例：
+Enzyme - 酶
+Protein - 蛋白质
+..."></textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">创建组别</button>
+    <a href="{{ url_for('main.index') }}" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}

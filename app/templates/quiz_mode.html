@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}测试模式 - {{ group.name }}{% endblock %}
+
+{% block content %}
+<div class="quiz-header">
+    <h1>{{ group.name }} - {{ '乱序' if mode == 'random' else '顺序' }}测试</h1>
+    <p>当前进度：{{ current_index }}/{{ total_words }}</p>
+    {% if last_result is defined and last_result is not none %}
+    <div class="result-feedback {{ 'correct' if last_result else 'wrong' }}">
+        {% if last_result %}
+            ✓ 正确！
+        {% else %}
+            {% if correct_answer %}
+                ✗ 错误，正确答案：{{ correct_answer }}
+            {% else %}
+                ✗ 错误，无正确答案信息
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<form method="POST">
+    <div class="quiz-card">
+        <h2>{{ current_word.english }}</h2>
+        <input type="text" name="answer" required 
+               class="form-control" placeholder="输入中文释义" autofocus>
+        <input type="hidden" name="word_id" value="{{ current_word.id }}">
+    </div>
+    
+    <div class="navigation">
+        <button type="submit" class="btn btn-primary">提交答案</button>
+        {% if current_index == total_words %}
+        <a href="{{ url_for('main.index') }}" class="btn">结束测试</a>
+        {% endif %}
+    </div>
+</form>
+
+<a href="{{ url_for('practice.exit_quiz', mode=mode) }}" class="btn btn-secondary">提前退出测试</a>
+
+{% endblock %}

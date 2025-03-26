@@ -1,0 +1,137 @@
+/* 基础样式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+nav {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+}
+
+nav a {
+    margin-right: 20px;
+    text-decoration: none;
+    color: #333;
+}
+
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* 组别卡片样式 */
+.group-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.group-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.group-card h2 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.stats span {
+    display: block;
+    margin: 5px 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.actions a {
+    display: inline-block;
+    margin: 10px 5px 0 0;
+    padding: 8px 15px;
+    background: #3498db;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: #3498db;
+    color: white;
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+/* 背诵卡片样式 */
+.study-card {
+    background: #fff;
+    border: 2px solid #3498db;
+    border-radius: 10px;
+    padding: 30px;
+    margin: 20px 0;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 测试模式反馈 */
+.result-feedback {
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.wrong {
+    background: #f8d7da;
+    color: #721c24;
+}
