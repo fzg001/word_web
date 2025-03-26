@@ -673,3 +673,57 @@ tbody tr:last-child td {
     position: relative; /* 为错误提示气泡定位 */
     margin-bottom: 25px;
 }
+
+
+/* 美化顶部导航 */
+nav {
+    background: white;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .brand {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+nav .nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    position: relative;
+    margin-right: 20px;
+    text-decoration: none;
+    color: var(--medium-text);
+    padding: 5px 0;
+    font-weight: 500;
+    transition: color var(--transition-speed);
+}
+
+nav a:hover {
+    color: var(--primary-color);
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width var(--transition-speed);
+}
+
+nav a:hover::after {
+    width: 100%;
+}
