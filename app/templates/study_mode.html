@@ -5,6 +5,7 @@
 <div class="study-header">
     <h1>{{ group.name }} - 背诵模式</h1>
     <p>当前进度：{{ current_index }}/{{ total_words }}</p>
+    <p class="keyboard-hint">提示：可使用 ← → 方向键快速导航</p>
 </div>
 
 <div class="study-card">
@@ -17,7 +18,7 @@
 <div class="navigation">
     <div class="nav-left">
         {% if current_index > 1 %}
-            <a href="?page={{ current_index - 1 }}" class="btn btn-primary">
+            <a href="?page={{ current_index - 1 }}" class="btn btn-primary" id="prev-btn">
                 <i class="nav-icon">←</i> 上一个
             </a>
         {% else %}
@@ -29,12 +30,48 @@
     
     <div class="nav-right">
         {% if current_index < total_words %}
-            <a href="?page={{ current_index + 1 }}" class="btn btn-primary">
+            <a href="?page={{ current_index + 1 }}" class="btn btn-primary" id="next-btn">
                 下一个 <i class="nav-icon">→</i>
             </a>
         {% else %}
-            <a href="{{ url_for('practice.complete_study', group_id=group.id) }}" class="btn btn-success">完成背诵</a>
+            <a href="{{ url_for('practice.complete_study', group_id=group.id) }}" class="btn btn-success" id="complete-btn">完成背诵</a>
         {% endif %}
     </div>
 </div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 获取导航按钮
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const completeBtn = document.getElementById('complete-btn');
+        
+        // 监听键盘事件
+        document.addEventListener('keydown', function(event) {
+            // 检查是否有输入框处于聚焦状态
+            if (document.activeElement.tagName === 'INPUT' || 
+                document.activeElement.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            // 左方向键 - 上一个单词
+            if (event.key === 'ArrowLeft' && prevBtn) {
+                event.preventDefault();
+                prevBtn.click();
+            } 
+            // 右方向键 - 下一个单词或完成
+            else if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                if (nextBtn) {
+                    nextBtn.click();
+                } else if (completeBtn) {
+                    completeBtn.click();
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+
 {% endblock %}

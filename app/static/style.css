@@ -833,3 +833,19 @@ nav a:hover::after {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transform: translateY(-2px);
 }
+
+/* 键盘快捷键提示样式 */
+.keyboard-hint {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-align: center;
+    margin: 10px 0;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.keyboard-hint:before {
+    content: "⌨️ ";
+}
