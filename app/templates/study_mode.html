@@ -4,7 +4,18 @@
 {% block content %}
 <div class="study-header">
     <h1>{{ group.name }} - 背诵模式</h1>
-    <p>当前进度：{{ current_index }}/{{ total_words }}</p>
+    
+    <!-- 新增的进度条UI，与测试模式保持一致 -->
+    <div class="progress-container">
+        <div class="progress-info">
+            <div class="progress-label">背诵进度</div>
+            <div class="progress-status">{{ current_index }}/{{ total_words }}</div>
+        </div>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar active" style="width: {{ (current_index / total_words * 100)|round }}%;"></div>
+        </div>
+    </div>
+    
     <p class="keyboard-hint">提示：可使用 ← → 方向键快速导航</p>
 </div>
 
