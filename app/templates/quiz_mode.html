@@ -37,6 +37,6 @@
 </form>
 
 <div class="exit-action">
-    <a href="{{ url_for('practice.exit_quiz', mode=mode) }}" class="btn btn-danger">提前退出测试</a>
+    <a href="{{ url_for('practice.exit_quiz', group_id=group.id, mode=mode) }}" class="btn btn-danger">提前退出测试</a>
 </div>
 {% endblock %}

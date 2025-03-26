@@ -441,3 +441,21 @@ tbody tr:last-child td {
 .actions .btn {
     margin: 2px;
 }
+
+/* 强化测试卡片的样式优先级 */
+.quiz-form .quiz-card {
+    background: #fff !important;
+    border: 1px solid #e0e0e0 !important;
+    position: static !important;
+    overflow: visible !important;
+    animation: none !important;
+    z-index: 1;
+}
+
+.quiz-form .quiz-card h2 {
+    display: block !important;
+    font-size: 2.5rem !important;
+    color: #333 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
