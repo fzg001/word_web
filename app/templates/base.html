@@ -9,16 +9,30 @@
     <nav>
         <a href="{{ url_for('main.index') }}">首页</a>
         <a href="{{ url_for('groups.create_group') }}">新建组别</a>
+        <a href="{{ url_for('groups.manage_groups') }}">编辑组别</a>
     </nav>
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    <div class="alert alert-{{ category }}" {% if message == '测试完成！' %}id="test-complete-alert"{% endif %}>{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
         {% block content %}{% endblock %}
     </div>
+    {% block scripts %}{% endblock %}
+    
+    <script>
+        // 处理"测试完成！"消息自动消失
+        document.addEventListener('DOMContentLoaded', function() {
+            const testCompleteAlert = document.getElementById('test-complete-alert');
+            if (testCompleteAlert) {
+                setTimeout(function() {
+                    testCompleteAlert.style.display = 'none';
+                }, 3000); // 3秒后自动隐藏
+            }
+        });
+    </script>
 </body>
 </html>

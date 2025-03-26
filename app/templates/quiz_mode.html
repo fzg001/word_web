@@ -20,7 +20,7 @@
     {% endif %}
 </div>
 
-<form method="POST">
+<form method="POST" class="quiz-form">
     <div class="quiz-card">
         <h2>{{ current_word.english }}</h2>
         <input type="text" name="answer" required 
@@ -28,14 +28,15 @@
         <input type="hidden" name="word_id" value="{{ current_word.id }}">
     </div>
     
-    <div class="navigation">
+    <div class="quiz-actions">
         <button type="submit" class="btn btn-primary">提交答案</button>
         {% if current_index == total_words %}
-        <a href="{{ url_for('main.index') }}" class="btn">结束测试</a>
+        <a href="{{ url_for('main.index') }}" class="btn btn-success">结束测试</a>
         {% endif %}
     </div>
 </form>
 
-<a href="{{ url_for('practice.exit_quiz', mode=mode) }}" class="btn btn-secondary">提前退出测试</a>
-
+<div class="exit-action">
+    <a href="{{ url_for('practice.exit_quiz', mode=mode) }}" class="btn btn-danger">提前退出测试</a>
+</div>
 {% endblock %}

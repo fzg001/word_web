@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}管理单词组{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>管理单词组</h1>
+    
+    <table class="groups-table">
+        <thead>
+            <tr>
+                <th>组名</th>
+                <th>单词数量</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group in groups %}
+            <tr>
+                <td>{{ group.name }}</td>
+                <td>{{ group.words.count() }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('groups.group_detail', group_id=group.id) }}" class="btn btn-secondary">预览</a>
+                    <a href="{{ url_for('groups.edit_group', group_id=group.id) }}" class="btn btn-primary">编辑</a>
+                    <form method="POST" action="{{ url_for('groups.delete_group', group_id=group.id) }}" class="inline-form" onsubmit="return confirm('确定要删除这个组别吗？此操作不可撤销！');">
+                        <button type="submit" class="btn btn-danger">删除</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

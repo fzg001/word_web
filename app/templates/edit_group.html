@@ -1,29 +1,26 @@
 {% extends "base.html" %}
-{% block title %}新建单词组{% endblock %}
+{% block title %}编辑 - {{ group.name }}{% endblock %}
 
 {% block content %}
 <div class="form-container">
-    <h1>新建单词组</h1>
+    <h1>编辑单词组</h1>
     <form method="POST" class="styled-form">
         <div class="form-group">
             <label for="group_name">组别名称</label>
             <input type="text" id="group_name" name="group_name" required
-                class="form-control" placeholder="例如：生物学基础词汇">
+                class="form-control" placeholder="例如：生物学基础词汇" value="{{ group.name }}">
         </div>
         
         <div class="form-group">
             <label for="words">单词列表</label>
             <p class="form-hint">每行一个，格式：英文 - 中文</p>
-            <textarea id="words" name="words" rows="10" required
-                    class="form-control" placeholder="示例：
-Enzyme - 酶
-Protein - 蛋白质
-..."></textarea>
+            <textarea id="words" name="words" rows="15" required
+                    class="form-control">{{ words_text }}</textarea>
         </div>
         
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">创建组别</button>
-            <a href="{{ url_for('main.index') }}" class="btn btn-secondary">取消</a>
+            <button type="submit" class="btn btn-primary">保存更改</button>
+            <a href="{{ url_for('groups.manage_groups') }}" class="btn btn-secondary">取消</a>
         </div>
     </form>
 </div>

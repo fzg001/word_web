@@ -10,21 +10,31 @@
 <div class="study-card">
     <div class="card-face">
         <h2>{{ word.english }}</h2>
-    </div>
-    <div class="card-face">
-        <h2>{{ word.chinese }}</h2>
+        <p>{{ word.chinese }}</p>
     </div>
 </div>
 
 <div class="navigation">
-    {% if current_index > 1 %}
-    <a href="?page={{ current_index - 1 }}" class="btn">上一个</a>
-    {% endif %}
+    <div class="nav-left">
+        {% if current_index > 1 %}
+            <a href="?page={{ current_index - 1 }}" class="btn btn-primary">
+                <i class="nav-icon">←</i> 上一个
+            </a>
+        {% else %}
+            <span class="btn disabled">
+                <i class="nav-icon">←</i> 上一个
+            </span>
+        {% endif %}
+    </div>
     
-    {% if current_index < total_words %}
-    <a href="?page={{ current_index + 1 }}" class="btn">下一个</a>
-    {% else %}
-    <a href="{{ url_for('main.index') }}" class="btn btn-success">完成背诵</a>
-    {% endif %}
+    <div class="nav-right">
+        {% if current_index < total_words %}
+            <a href="?page={{ current_index + 1 }}" class="btn btn-primary">
+                下一个 <i class="nav-icon">→</i>
+            </a>
+        {% else %}
+            <a href="{{ url_for('main.index') }}" class="btn btn-success">完成背诵</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
