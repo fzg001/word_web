@@ -4,19 +4,45 @@
 {% block content %}
 <h1>单词组列表</h1>
 
-<!-- 添加拖放排序说明和控制按钮 -->
-<div class="sort-controls" style="margin-bottom: 20px;">
-    <button id="toggle-drag-mode" class="btn btn-secondary">
-        <span class="btn-icon">↕️</span> 开启卡片排序
-    </button>
-    <div id="drag-instructions" style="display: none; margin-top: 10px;" class="alert alert-info">
-        长按卡片可拖动排序。完成后点击"保存排序"按钮。
+<div class="page-controls" style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+    <!-- 排序控制区 -->
+    <div class="sort-controls">
+        <button id="toggle-drag-mode" class="btn btn-secondary">
+            <span class="btn-icon">↕️</span> 开启卡片排序
+        </button>
+        <div id="drag-instructions" style="display: none; margin-top: 10px;" class="alert alert-info">
+            长按卡片可拖动排序。完成后点击"保存排序"按钮。
+        </div>
+        <div id="drag-buttons" style="display: none; margin-top: 10px;">
+            <button id="save-drag-order" class="btn btn-success">保存排序</button>
+            <button id="cancel-drag" class="btn btn-secondary">取消</button>
+        </div>
     </div>
-    <div id="drag-buttons" style="display: none; margin-top: 10px;">
-        <button id="save-drag-order" class="btn btn-success">保存排序</button>
-        <button id="cancel-drag" class="btn btn-secondary">取消</button>
+    
+    <!-- 新增筛选控制区 -->
+    <div class="filter-controls">
+        <div class="filter-btn-group">
+            <span class="filter-label">筛选：</span>
+            <label class="filter-btn">
+                <input type="checkbox" data-filter="diamond" checked>
+                <span class="chip diamond">钻石</span>
+            </label>
+            <label class="filter-btn">
+                <input type="checkbox" data-filter="gold" checked>
+                <span class="chip gold">黄金</span>
+            </label>
+            <label class="filter-btn">
+                <input type="checkbox" data-filter="bronze" checked>
+                <span class="chip bronze">青铜</span>
+            </label>
+            <label class="filter-btn">
+                <input type="checkbox" data-filter="basic" checked>
+                <span class="chip basic">基础</span>
+            </label>
+        </div>
     </div>
 </div>
+
 
 <div class="group-list" id="sortable-groups">
     {% for group in groups %}
@@ -24,8 +50,13 @@
         {% if group.stats.random_last_score == 1.0 %}diamond-card
         {% elif group.stats.last_score == 1.0 %}gold-card
         {% elif group.stats.study_count >= 3 %}bronze-card
+        {% else %}basic-card
         {% endif %}"
         data-id="{{ group.id }}"
+        data-type="{% if group.stats.random_last_score == 1.0 %}diamond
+                  {% elif group.stats.last_score == 1.0 %}gold
+                  {% elif group.stats.study_count >= 3 %}bronze
+                  {% else %}basic{% endif %}"
         data-order="{{ group.order_index or loop.index }}">
         <h2>{{ group.name }}</h2>
         <p>单词数量：{{ group.words.count() }}</p>
@@ -286,5 +317,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 });
+
+// 添加筛选功能
+document.addEventListener('DOMContentLoaded', function() {
+    const filterCheckboxes = document.querySelectorAll('.filter-btn input[type="checkbox"]');
+    const cards = document.querySelectorAll('.group-card');
+    
+    // 初始状态所有卡片都显示
+    let activeFilters = {
+        diamond: true,
+        gold: true,
+        bronze: true,
+        basic: true
+    };
+    
+    // 应用筛选
+    function applyFilters() {
+        cards.forEach(card => {
+            const cardType = card.dataset.type;
+            
+            if (activeFilters[cardType]) {
+                card.classList.remove('hidden-card');
+            } else {
+                card.classList.add('hidden-card');
+            }
+        });
+    }
+    
+    // 监听筛选复选框变化
+    filterCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const filterType = this.dataset.filter;
+            activeFilters[filterType] = this.checked;
+            
+            applyFilters();
+        });
+    });
+});
+
+
 </script>
 {% endblock %}
