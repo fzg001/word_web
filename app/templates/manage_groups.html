@@ -5,17 +5,33 @@
 <div class="container">
     <h1>管理单词组</h1>
     
+    <div class="action-bar">
+        <a href="{{ url_for('groups.create_group') }}" class="btn btn-primary">
+            <span class="btn-icon">+</span> 新建组别
+        </a>
+        <button id="toggle-sort-mode" class="btn btn-secondary">
+            <span class="btn-icon">↕️</span> 开启排序模式
+        </button>
+    </div>
+    
     <table class="groups-table">
         <thead>
             <tr>
+                <th class="sort-col" style="display: none;">排序</th>
                 <th>组名</th>
                 <th>单词数量</th>
                 <th>操作</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="sortable-groups">
             {% for group in groups %}
-            <tr>
+            <tr data-id="{{ group.id }}" data-order="{{ group.order_index or loop.index }}">
+                <td class="sort-col" style="display: none;">
+                    <div class="sort-buttons">
+                        <button type="button" class="sort-btn sort-up">↑</button>
+                        <button type="button" class="sort-btn sort-down">↓</button>
+                    </div>
+                </td>
                 <td>{{ group.name }}</td>
                 <td>{{ group.words.count() }}</td>
                 <td class="actions">
@@ -29,5 +45,165 @@
             {% endfor %}
         </tbody>
     </table>
+    
+    <!-- 排序模式控制区 -->
+    <div id="sort-controls" style="display: none; margin-top: 20px;">
+        <button id="save-order" class="btn btn-success">保存排序</button>
+        <button id="cancel-sort" class="btn btn-secondary">取消</button>
+    </div>
 </div>
+
+<style>
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.sort-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.sort-btn {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.sort-btn:hover {
+    background: #f1f1f1;
+}
+
+.btn-icon {
+    margin-right: 5px;
+}
+
+tr.sorting {
+    background-color: #f8f9fa !important;
+}
+
+tr.sorting td {
+    background-color: #e8f4ff;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleSortBtn = document.getElementById('toggle-sort-mode');
+    const sortCols = document.querySelectorAll('.sort-col');
+    const sortControls = document.getElementById('sort-controls');
+    const saveOrderBtn = document.getElementById('save-order');
+    const cancelSortBtn = document.getElementById('cancel-sort');
+    const tbody = document.getElementById('sortable-groups');
+    const rows = tbody.querySelectorAll('tr');
+    
+    let sortMode = false;
+    
+    // 开关排序模式
+    toggleSortBtn.addEventListener('click', function() {
+        sortMode = !sortMode;
+        
+        if (sortMode) {
+            // 开启排序模式
+            toggleSortBtn.textContent = '关闭排序模式';
+            sortCols.forEach(col => col.style.display = 'table-cell');
+            sortControls.style.display = 'block';
+            tbody.classList.add('sorting');
+            toggleSortBtn.classList.add('btn-warning');
+            toggleSortBtn.classList.remove('btn-secondary');
+        } else {
+            // 关闭排序模式
+            toggleSortBtn.textContent = '开启排序模式';
+            sortCols.forEach(col => col.style.display = 'none');
+            sortControls.style.display = 'none';
+            tbody.classList.remove('sorting');
+            toggleSortBtn.classList.remove('btn-warning');
+            toggleSortBtn.classList.add('btn-secondary');
+        }
+    });
+    
+    // 向上移动
+    tbody.addEventListener('click', function(e) {
+        if (!sortMode) return;
+        
+        if (e.target.classList.contains('sort-up')) {
+            const row = e.target.closest('tr');
+            const prevRow = row.previousElementSibling;
+            
+            if (prevRow) {
+                tbody.insertBefore(row, prevRow);
+            }
+        }
+    });
+    
+    // 向下移动
+    tbody.addEventListener('click', function(e) {
+        if (!sortMode) return;
+        
+        if (e.target.classList.contains('sort-down')) {
+            const row = e.target.closest('tr');
+            const nextRow = row.nextElementSibling;
+            
+            if (nextRow) {
+                tbody.insertBefore(nextRow, row);
+            }
+        }
+    });
+    
+  // 保存排序
+
+    saveOrderBtn.addEventListener('click', function() {
+        const newOrder = [];
+        const rows = tbody.querySelectorAll('tr');
+        
+        rows.forEach((row, index) => {
+            const groupId = row.dataset.id;
+            if (groupId) {
+                newOrder.push({
+                    id: parseInt(groupId),
+                    order: index + 1
+                });
+            }
+        });
+
+        console.log("准备发送的数据:", JSON.stringify({ groups: newOrder }));
+        
+    // 使用表单提交而不是fetch
+    const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("groups.update_order") }}';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'order_data';
+        input.value = JSON.stringify({ groups: newOrder });
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    });
+    // 取消排序
+    cancelSortBtn.addEventListener('click', function() {
+        // 重新按原始顺序排序
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+            return parseInt(a.dataset.order) - parseInt(b.dataset.order);
+        });
+        
+        // 清空tbody并按原始顺序添加行
+        while (tbody.firstChild) {
+            tbody.removeChild(tbody.firstChild);
+        }
+        
+        rows.forEach(row => tbody.appendChild(row));
+        
+        // 关闭排序模式
+        toggleSortBtn.click();
+    });
+});
+</script>
 {% endblock %}

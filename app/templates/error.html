@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}错误{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <h1>发生错误</h1>
+    <div class="error-details">
+        <p>{{ error }}</p>
+    </div>
+    <div class="error-actions">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">返回首页</a>
+    </div>
+</div>
+{% endblock %}

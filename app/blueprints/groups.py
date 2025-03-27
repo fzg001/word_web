@@ -133,3 +133,44 @@ def delete_group(group_id):
     db.session.commit()
     flash('组别已删除', 'success')
     return redirect(url_for('groups.manage_groups'))
+
+
+
+
+@groups_bp.route('/update_order', methods=['POST'])
+def update_order():
+    """更新单词组排序"""
+    try:
+        from app.models import WordGroup
+        from app import db
+        import json
+        
+        # 从表单获取数据
+        order_data = request.form.get('order_data')
+        if not order_data:
+            flash('未收到排序数据', 'danger')
+            return redirect(url_for('groups.manage_groups'))
+        
+        data = json.loads(order_data)
+        
+        if not data or 'groups' not in data:
+            flash('无效的排序数据', 'danger')
+            return redirect(url_for('groups.manage_groups'))
+        
+        # 更新每个组的排序字段
+        for item in data['groups']:
+            group_id = item.get('id')
+            order = item.get('order')
+            
+            if group_id and order:
+                group = WordGroup.query.get(group_id)
+                if group:
+                    group.order_index = order
+        
+        db.session.commit()
+        flash('排序已成功保存', 'success')
+        return redirect(url_for('groups.manage_groups'))
+    except Exception as e:
+        db.session.rollback()
+        flash(f'排序保存失败: {str(e)}', 'danger')
+        return redirect(url_for('groups.manage_groups'))

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -20,4 +20,10 @@ def create_app():
     app.register_blueprint(groups_bp, url_prefix='/groups')
     app.register_blueprint(practice_bp, url_prefix='/practice')
 
+    @app.errorhandler(500)
+    def handle_500_error(e):
+        if request.is_json:
+            return jsonify({"success": False, "error": "服务器内部错误"}), 500
+        return render_template('error.html', error=str(e)), 500
+    
     return app

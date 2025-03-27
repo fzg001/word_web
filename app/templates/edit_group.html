@@ -11,6 +11,19 @@
                 class="form-control" placeholder="例如：生物学基础词汇" value="{{ group.name }}">
         </div>
         
+        <!-- 添加搜索框 -->
+        <div class="search-container">
+            <label for="word-search">搜索单词</label>
+            <div class="search-input-wrapper">
+                <input type="text" id="word-search" class="form-control" 
+                    placeholder="输入英文或中文关键词搜索...">
+                <button type="button" id="clear-search" class="search-clear-btn">×</button>
+            </div>
+            <div class="search-stats">
+                <span id="match-count">0</span> 个匹配 / 共 <span id="total-count">0</span> 个单词
+            </div>
+        </div>
+        
         <div class="form-group">
             <label for="words">单词列表</label>
             <p class="form-hint">每行一个，格式：英文 - 中文</p>
@@ -24,4 +37,113 @@
         </div>
     </form>
 </div>
+
+<style>
+.search-container {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color, #4285f4);
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #666;
+    cursor: pointer;
+    display: none;
+}
+
+.search-stats {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.highlight {
+    background-color: #fff3cd;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('word-search');
+    const clearButton = document.getElementById('clear-search');
+    const textarea = document.getElementById('words');
+    const matchCount = document.getElementById('match-count');
+    const totalCount = document.getElementById('total-count');
+    
+    // 初始化总计数
+    const lines = textarea.value.split('\n').filter(line => line.trim());
+    totalCount.textContent = lines.length;
+    
+    // 搜索功能
+    function performSearch() {
+        const query = searchInput.value.toLowerCase().trim();
+        
+        if (query) {
+            clearButton.style.display = 'block';
+            
+            const lines = textarea.value.split('\n');
+            const originalText = textarea.value;
+            
+            let matches = 0;
+            const filteredLines = [];
+            
+            lines.forEach(line => {
+                if (line.toLowerCase().includes(query)) {
+                    filteredLines.push(line);
+                    matches++;
+                }
+            });
+            
+            if (matches > 0) {
+                textarea.value = filteredLines.join('\n');
+                matchCount.textContent = matches;
+            } else {
+                textarea.value = '--- 没有匹配的单词 ---';
+                matchCount.textContent = '0';
+            }
+            
+            // 保存原始文本，以便恢复
+            textarea.dataset.originalText = originalText;
+        } else {
+            clearSearch();
+        }
+    }
+    
+    // 清除搜索
+    function clearSearch() {
+        if (textarea.dataset.originalText) {
+            textarea.value = textarea.dataset.originalText;
+            delete textarea.dataset.originalText;
+        }
+        
+        searchInput.value = '';
+        clearButton.style.display = 'none';
+        matchCount.textContent = '0';
+    }
+    
+    // 事件监听
+    searchInput.addEventListener('input', performSearch);
+    clearButton.addEventListener('click', clearSearch);
+    
+    // 表单提交前恢复原始文本
+    document.querySelector('form').addEventListener('submit', function() {
+        if (textarea.dataset.originalText) {
+            textarea.value = textarea.dataset.originalText;
+        }
+    });
+});
+</script>
 {% endblock %}

@@ -456,7 +456,9 @@ tbody tr:last-child td {
     opacity: 1 !important;
 }
 
+
 /* 卡片级别样式 - 只应用于首页卡片 */
+
 .group-list .bronze-card {
     background: linear-gradient(145deg, #fff, #f5f3f0);
     border: 2px solid #cd7f32 !important;
@@ -474,6 +476,8 @@ tbody tr:last-child td {
     overflow: hidden;
     animation: gold-pulse 2.5s infinite;
 }
+
+
 
 .group-list .diamond-card {
     background: linear-gradient(145deg, #e6f7ff, #f2fcff);
@@ -917,3 +921,63 @@ nav a:hover::after {
 .progress-bar.active {
     animation: progress-pulse 2s infinite;
 }
+
+/* 玻璃效果按钮样式 */
+.glass-btn {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.8);
+    transition: all 0.3s ease;
+    padding: 10px 15px;
+}
+
+/* 背诵模式按钮  */
+.glass-btn.study {
+    border-left: 3px solid #4285f4;
+    box-shadow: 0 4px 10px rgba(66, 133, 244, 0.15);
+}
+
+.glass-btn.study:hover {
+    background: rgba(66, 133, 244, 0.15);
+    box-shadow: 0 6px 12px rgba(66, 133, 244, 0.2);
+    transform: translateY(-2px);
+}
+
+/* 顺序测试按钮  */
+.glass-btn.order{
+    border-left: 3px solid #fbbc05;
+    box-shadow: 0 4px 10px rgba(251, 188, 5, 0.15);
+}
+
+.glass-btn.order:hover {
+    background: rgba(251, 188, 5, 0.15);
+    box-shadow: 0 6px 12px rgba(251, 188, 5, 0.2);
+    transform: translateY(-2px);
+}
+
+/* 乱序测试按钮 */
+.glass-btn.random {
+    border-left: 3px solid #34a853;
+    box-shadow: 0 4px 10px rgba(52, 168, 83, 0.15);
+}
+
+.glass-btn.random:hover {
+    background: rgba(52, 168, 83, 0.15);
+    box-shadow: 0 6px 12px rgba(52, 168, 83, 0.2);
+    transform: translateY(-2px);
+}
+
+
+/* 组别卡片内按钮布局优化 */
+.group-card .actions {
+    justify-content: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+
+
+
