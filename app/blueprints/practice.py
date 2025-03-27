@@ -4,7 +4,6 @@ from app import db
 import random
 
 practice_bp = Blueprint('practice', __name__)
-
 def get_practice_words(group, mode):
     """获取练习单词列表"""
     # 强制执行查询，获取所有单词对象
@@ -36,8 +35,15 @@ def get_practice_words(group, mode):
         print(f"乱序后共 {len(shuffled_words)} 个单词")
         return shuffled_words
     
-    # 顺序模式直接返回
-    return words
+    # 顺序模式也进行ID验证，确保单词存在
+    ordered_words = []
+    for word in words:
+        if word and Word.query.get(word.id):  # 确认单词仍存在于数据库中
+            ordered_words.append(word)
+            print(f"添加顺序单词: {word.english} - {word.chinese}")
+    
+    print(f"顺序模式共 {len(ordered_words)} 个单词")
+    return ordered_words
 
 @practice_bp.route('/study/<int:group_id>')
 def study_mode(group_id):
