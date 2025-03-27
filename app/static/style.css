@@ -1423,50 +1423,53 @@ nav a:hover::after {
 
 
 
-/* 增强紧凑视图下的拖放体验 */
-.compact-view .group-card.draggable {
-    cursor: move;
+/* 卡片选择交换排序相关样式 */
+.sortable-card {
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
 }
 
-.compact-view .group-card.dragging {
-    opacity: 0.8;
-    transform: scale(1.05);
-    z-index: 1000;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* 紧凑视图下拖动手柄位置调整 */
-.compact-view .drag-handle {
-    top: 6px;
-    right: 6px;
-    width: 22px;
-    height: 22px;
-    font-size: 16px;
-    background: rgba(0, 0, 0, 0.1);
-}
-
-/* 拖放目标位置指示器 */
-.compact-view .group-card.drag-target-before::before {
+.sortable-card::before {
     content: '';
     position: absolute;
-    top: -8px;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background-color: var(--primary-color, #4285f4);
-    border-radius: 2px;
-    z-index: 20;
+    top: 15px;
+    right: 15px;
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'%3E%3Cpath d='M7.5 4C7.5 5.38071 6.38071 6.5 5 6.5C3.61929 6.5 2.5 5.38071 2.5 4C2.5 2.61929 3.61929 1.5 5 1.5C6.38071 1.5 7.5 2.61929 7.5 4ZM5 10.5C6.38071 10.5 7.5 11.6193 7.5 13C7.5 14.3807 6.38071 15.5 5 15.5C3.61929 15.5 2.5 14.3807 2.5 13C2.5 11.6193 3.61929 10.5 5 10.5ZM5 19.5C6.38071 19.5 7.5 20.6193 7.5 22C7.5 23.3807 6.38071 24.5 5 24.5C3.61929 24.5 2.5 23.3807 2.5 22C2.5 20.6193 3.61929 19.5 5 19.5ZM13 4C13 5.38071 11.8807 6.5 10.5 6.5C9.11929 6.5 8 5.38071 8 4C8 2.61929 9.11929 1.5 10.5 1.5C11.8807 1.5 13 2.61929 13 4ZM10.5 10.5C11.8807 10.5 13 11.6193 13 13C13 14.3807 11.8807 15.5 10.5 15.5C9.11929 15.5 8 14.3807 8 13C8 11.6193 9.11929 10.5 10.5 10.5ZM10.5 19.5C11.8807 19.5 13 20.6193 13 22C13 23.3807 11.8807 24.5 10.5 24.5C9.11929 24.5 8 23.3807 8 22C8 20.6193 9.11929 19.5 10.5 19.5Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.5;
+    z-index: 5;
 }
 
-.compact-view .group-card.drag-target-after::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background-color: var(--primary-color, #4285f4);
-    border-radius: 2px;
-    z-index: 20;
+.card-selected {
+    box-shadow: 0 0 0 3px #4285f4, 0 6px 20px rgba(66, 133, 244, 0.4) !important;
+    transform: scale(1.02);
+    z-index: 100;
 }
 
+.card-swapped {
+    animation: card-swap 0.5s ease;
+}
+
+@keyframes card-swap {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* 排序模式下禁用链接点击 */
+.disabled-during-sort {
+    pointer-events: none;
+    color: inherit;
+    text-decoration: none;
+}
+
+/* 确保卡片在排序模式下不会发生布局变化 */
+.sortable-card h2,
+.sortable-card .stats,
+.sortable-card .actions {
+    pointer-events: none;
+}

@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <title>WordWeb - {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        (function() {
+            // 立即读取本地存储的视图设置
+            var savedView = localStorage.getItem('wordweb_card_view');
+            // 如果已保存为紧凑视图，则提前应用类名
+            if (savedView === 'compact') {
+                // 使用标记来通知DOM加载后的脚本不要重复应用视图
+                document.documentElement.className += ' view-set-from-storage';
+                // 由于container还未加载，先在html元素上标记
+                document.documentElement.className += ' compact-view-pending';
+            }
+        })();
+    </script>
+
+
 </head>
 <body>
     <nav>

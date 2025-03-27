@@ -54,7 +54,7 @@
                 <span class="chip bronze">青铜</span>
             </label>
             <label class="filter-btn">
-                <input type="checkbox" data-filter="basic">
+                <input type="checkbox" data-filter="basic" checked>
                 <span class="chip basic">基础</span>
             </label>
         </div>
@@ -113,271 +113,193 @@
     {% endfor %}
 </div>
 
-<!-- 添加拖放相关JavaScript -->
+
 <script>
+
+
+
+// 卡片选择排序功能
 document.addEventListener('DOMContentLoaded', function() {
     const toggleDragBtn = document.getElementById('toggle-drag-mode');
-    const instructionsPanel = document.getElementById('drag-instructions');
+    const dragInstructions = document.getElementById('drag-instructions');
     const dragButtons = document.getElementById('drag-buttons');
     const saveDragOrderBtn = document.getElementById('save-drag-order');
     const cancelDragBtn = document.getElementById('cancel-drag');
-    const groupList = document.getElementById('sortable-groups');
-    const cards = groupList.querySelectorAll('.group-card');
-    const dragHandles = document.querySelectorAll('.drag-handle');
+    const groupList = document.querySelector('.group-list');
     
-    let dragMode = false;
-    let originalOrder = [];
+    let sortMode = false;
+    let firstSelectedCard = null;
     
-    // 保存原始顺序
-    function saveOriginalOrder() {
-        originalOrder = [];
-        cards.forEach(card => {
-            originalOrder.push({
-                id: card.dataset.id,
-                element: card
-            });
-        });
-    }
-    
-    // 恢复原始顺序
-    function restoreOriginalOrder() {
-        originalOrder.forEach(item => {
-            groupList.appendChild(item.element);
-        });
-    }
-    
-    // 切换拖放模式
+    // 开关排序模式
     toggleDragBtn.addEventListener('click', function() {
-        dragMode = !dragMode;
+        sortMode = !sortMode;
         
-        if (dragMode) {
-            // 保存原始顺序
-            saveOriginalOrder();
-            
-            // 启用拖放
-            cards.forEach(card => {
-                card.setAttribute('draggable', 'true');
-                card.classList.add('draggable');
-            });
-            
-            // 显示拖动手柄
-            dragHandles.forEach(handle => {
-                handle.style.display = 'flex';
-            });
-            
-            // 更新UI
+        if (sortMode) {
+            // 开启排序模式
             toggleDragBtn.textContent = '关闭卡片排序';
             toggleDragBtn.classList.add('btn-warning');
             toggleDragBtn.classList.remove('btn-secondary');
-            instructionsPanel.style.display = 'block';
+            dragInstructions.style.display = 'block';
+            dragInstructions.textContent = '请先选择一张卡片，然后选择另一张卡片进行位置交换。';
             dragButtons.style.display = 'block';
             
-            // 禁用卡片内的按钮链接
-            groupList.querySelectorAll('.actions a').forEach(link => {
-                link.addEventListener('click', preventClickDuringDrag);
-                link.classList.add('disabled-during-drag');
+            // 为所有卡片添加选择点击事件
+            document.querySelectorAll('.group-card').forEach(card => {
+                card.classList.add('sortable-card');
+                
+                // 禁用卡片内的链接
+                card.querySelectorAll('a').forEach(link => {
+                    link.classList.add('disabled-during-sort');
+                });
             });
         } else {
-            // 关闭拖放模式
-            disableDragMode();
+            // 关闭排序模式
+            toggleDragBtn.textContent = '开启卡片排序';
+            toggleDragBtn.classList.remove('btn-warning');
+            toggleDragBtn.classList.add('btn-secondary');
+            dragInstructions.style.display = 'none';
+            dragButtons.style.display = 'none';
+            
+            // 清除选中状态
+            resetCardSelection();
+            
+            // 移除排序相关类和事件
+            document.querySelectorAll('.group-card').forEach(card => {
+                card.classList.remove('sortable-card');
+                
+                // 重新启用卡片内的链接
+                card.querySelectorAll('a').forEach(link => {
+                    link.classList.remove('disabled-during-sort');
+                });
+            });
         }
     });
     
-    // 关闭拖放模式
-    function disableDragMode() {
-        // 禁用拖放
-        cards.forEach(card => {
-            card.removeAttribute('draggable');
-            card.classList.remove('draggable');
-        });
+    // 卡片点击事件委托
+    groupList.addEventListener('click', function(e) {
+        if (!sortMode) return;
         
-        // 隐藏拖动手柄
-        dragHandles.forEach(handle => {
-            handle.style.display = 'none';
-        });
+        // 找到被点击的卡片
+        const clickedCard = e.target.closest('.group-card');
+        if (!clickedCard) return;
         
-        // 更新UI
-        toggleDragBtn.textContent = '开启卡片排序';
-        toggleDragBtn.classList.remove('btn-warning');
-        toggleDragBtn.classList.add('btn-secondary');
-        instructionsPanel.style.display = 'none';
-        dragButtons.style.display = 'none';
+        // 阻止卡片内链接的点击事件
+        e.preventDefault();
         
-        // 重新启用卡片内的按钮链接
-        groupList.querySelectorAll('.actions a').forEach(link => {
-            link.removeEventListener('click', preventClickDuringDrag);
-            link.classList.remove('disabled-during-drag');
-        });
-        
-        dragMode = false;
-    }
-    
-    // 阻止拖放模式下的点击
-    function preventClickDuringDrag(e) {
-        if (dragMode) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
+        if (!firstSelectedCard) {
+            // 第一次选择
+            firstSelectedCard = clickedCard;
+            firstSelectedCard.classList.add('card-selected');
+            dragInstructions.textContent = '已选择一张卡片，请选择另一张卡片进行交换。';
+        } else if (firstSelectedCard === clickedCard) {
+            // 取消选择
+            firstSelectedCard.classList.remove('card-selected');
+            firstSelectedCard = null;
+            dragInstructions.textContent = '请选择一张卡片。';
+        } else {
+            // 选择第二张卡片并交换位置
+            clickedCard.classList.add('card-selected');
+            
+            // 显示交换动画
+            setTimeout(() => {
+                // 执行交换
+                swapCards(firstSelectedCard, clickedCard);
+                
+                // 清除选中状态
+                resetCardSelection();
+                
+                dragInstructions.textContent = '卡片交换完成！你可以继续选择卡片交换位置。';
+            }, 300);
         }
-    }
-    
-    // 取消拖放排序
-    cancelDragBtn.addEventListener('click', function() {
-        restoreOriginalOrder();
-        disableDragMode();
     });
     
-    // 保存拖放排序
+    // 交换两个卡片的位置
+    function swapCards(card1, card2) {
+        // 获取引用节点
+        const card1Next = card1.nextElementSibling;
+        const card2Next = card2.nextElementSibling;
+        const card1Parent = card1.parentNode;
+        const card2Parent = card2.parentNode;
+        
+        // 交换位置
+        if (card2Next === card1) {
+            // 如果card2紧接在card1之前
+            card2Parent.insertBefore(card1, card2);
+        } else if (card1Next === card2) {
+            // 如果card1紧接在card2之前
+            card1Parent.insertBefore(card2, card1);
+        } else {
+            // 其他情况
+            if (card1Next) {
+                card1Parent.insertBefore(card2, card1Next);
+            } else {
+                card1Parent.appendChild(card2);
+            }
+            
+            if (card2Next) {
+                card2Parent.insertBefore(card1, card2Next);
+            } else {
+                card2Parent.appendChild(card1);
+            }
+        }
+        
+        // 添加交换完成后的视觉效果
+        card1.classList.add('card-swapped');
+        card2.classList.add('card-swapped');
+        
+        setTimeout(() => {
+            card1.classList.remove('card-swapped');
+            card2.classList.remove('card-swapped');
+        }, 500);
+    }
+    
+    // 重置卡片选择状态
+    function resetCardSelection() {
+        if (firstSelectedCard) {
+            firstSelectedCard.classList.remove('card-selected');
+            firstSelectedCard = null;
+        }
+        document.querySelectorAll('.card-selected').forEach(card => {
+            card.classList.remove('card-selected');
+        });
+    }
+    
+    // 保存排序顺序
     saveDragOrderBtn.addEventListener('click', function() {
-        const newOrder = [];
-        const currentCards = groupList.querySelectorAll('.group-card');
-        
-        currentCards.forEach((card, index) => {
-            newOrder.push({
+        const cards = Array.from(groupList.querySelectorAll('.group-card'));
+        const newOrder = cards.map((card, index) => {
+            return {
                 id: parseInt(card.dataset.id),
                 order: index + 1
-            });
-    });
-
-
-    // 使用表单提交到后端保存
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '{{ url_for("groups.update_order") }}';
-    
-    // 添加排序数据
-    const orderInput = document.createElement('input');
-    orderInput.type = 'hidden';
-    orderInput.name = 'order_data';
-    orderInput.value = JSON.stringify({ groups: newOrder });
-    
-    // 添加来源页面信息
-    const refererInput = document.createElement('input');
-    refererInput.type = 'hidden';
-    refererInput.name = 'referer';
-    refererInput.value = 'main';
-    
-    form.appendChild(orderInput);
-    form.appendChild(refererInput);
-    document.body.appendChild(form);
-    form.submit();
-        });
-    
-    // 拖放事件处理
-    let draggedItem = null;
-    
-    cards.forEach(card => {
-        // 长按触发拖动（移动设备支持）
-        let longPressTimer;
-        
-        card.addEventListener('touchstart', function(e) {
-            if (!dragMode) return;
-            
-            longPressTimer = setTimeout(() => {
-                this.classList.add('dragging');
-                draggedItem = this;
-            }, 500); // 长按500ms激活
+            };
         });
         
-        card.addEventListener('touchend', function() {
-            if (longPressTimer) clearTimeout(longPressTimer);
-            this.classList.remove('dragging');
-        });
+        // 创建表单并提交
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = saveOrderUrl; // 确保这个变量在模板中已定义
         
-        // 更新触摸拖放事件
-        card.addEventListener('touchmove', function(e) {
-            if (!dragMode || !draggedItem) return;
-            
-            e.preventDefault(); // 防止页面滚动
-            
-            const touch = e.touches[0];
-            const pageX = touch.pageX;
-            const pageY = touch.pageY;
-            
-            const afterElement = getDragAfterElement(groupList, pageX, pageY);
-            if (afterElement == null) {
-                groupList.appendChild(draggedItem);
-            } else {
-                groupList.insertBefore(draggedItem, afterElement);
-            }
-        });
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'order_data';
+        input.value = JSON.stringify({ groups: newOrder });
         
-        // 电脑拖放支持
-        card.addEventListener('dragstart', function() {
-            if (!dragMode) return;
-            
-            this.classList.add('dragging');
-            draggedItem = this;
-        });
-        
-        card.addEventListener('dragend', function() {
-            this.classList.remove('dragging');
-        });
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
     });
     
-    // 更新鼠标拖放事件
-    groupList.addEventListener('dragover', function(e) {
-        if (!dragMode) return;
-        
-        e.preventDefault();
-        const afterElement = getDragAfterElement(groupList, e.clientX, e.clientY);
-        const draggable = document.querySelector('.dragging');
-        
-        if (afterElement == null) {
-            groupList.appendChild(draggable);
-        } else {
-            groupList.insertBefore(draggable, afterElement);
+    // 取消排序
+    cancelDragBtn.addEventListener('click', function() {
+        // 关闭排序模式
+        if (sortMode) {
+            toggleDragBtn.click();
         }
     });
-    
-    // 确定拖动后的位置- 改进版本，适应不同视图模式
- 
-    function getDragAfterElement(container, x, y) {
-        const isCompactView = document.querySelector('.container').classList.contains('compact-view');
-        const draggableElements = [...container.querySelectorAll('.group-card:not(.dragging)')];
-        
-        if (isCompactView) {
-            // 紧凑视图下：考虑卡片的二维网格布局
-            // 计算哪张卡片与拖动位置最近，考虑 X 和 Y 坐标
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                
-                // 计算拖动点到卡片中心的距离
-                const centerX = box.left + box.width / 2;
-                const centerY = box.top + box.height / 2;
-                const distanceSquared = Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2);
-                
-                // 我们只关心拖动点上方和左侧的卡片
-                const isBefore = (y < box.top + box.height / 2) || 
-                                (y < box.top + box.height + 20 && x < box.left);
-                
-                if (isBefore && (!closest.element || distanceSquared < closest.distance)) {
-                    return { distance: distanceSquared, element: child };
-                } else {
-                    return closest;
-                }
-            }, { distance: Infinity }).element;
-        } else {
-            // 默认视图下：主要考虑垂直位置
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-    }
-
-
-
-
-
-
 });
+
+
+
 
 
 // 添加筛选功能
@@ -475,6 +397,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+
+
+    
     // 应用卡片视图类型
 
     function applyCardView(viewType) {
@@ -505,10 +430,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.style.display = 'none';
             });
         }
-    }
-
+    } 
 
 });
+
+
+
+
+
+
+
+
 
 </script>
 {% endblock %}
