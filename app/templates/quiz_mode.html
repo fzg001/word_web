@@ -40,11 +40,23 @@
     </div>
     
     <div class="quiz-actions">
-        <button type="submit" class="btn btn-primary">提交答案</button>
-        {% if current_index == total_words %}
-        <a href="{{ url_for('main.index') }}" class="btn btn-success">结束测试</a>
+        {% if not test_completed %}
+            <button type="submit" class="btn btn-primary">提交答案</button>
         {% endif %}
-        <a href="{{ url_for('practice.exit_quiz', group_id=group.id, mode=mode) }}" class="btn btn-danger">提前退出测试</a>
+        
+        {% if test_completed %}
+            <a href="{{ url_for('practice.complete_quiz', group_id=group.id, mode=mode) }}" class="btn btn-success">
+                完成测试
+            </a>
+        {% else %}
+            <a href="{{ url_for('practice.exit_quiz', group_id=group.id, mode=mode) }}" class="btn btn-danger">
+                提前退出测试
+            </a>
+        {% endif %}
     </div>
+
+
+
+    
 </form>
 {% endblock %}

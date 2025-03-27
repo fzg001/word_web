@@ -212,13 +212,19 @@ def quiz_mode(group_id, mode):
 
         # 提交后立即检查是否已经完成所有单词
         if session[index_key] >= len(session[words_key]):
-            # 清除测试相关的会话数据
-            keys_to_remove = [words_key, index_key, correct_count_key, last_result_key, correct_answer_key]
-            for key in keys_to_remove:
-                if key in session:
-                    session.pop(key)
-            flash('测试完成！', 'success')
-            return redirect(url_for('main.index'))
+            # 不立即重定向，而是标记测试已完成
+            session[f'quiz_{group_id}_{mode}_completed'] = True
+            return render_template('quiz_mode.html',
+                                            group=group,
+                                            current_word=current_word,
+                                            mode=mode,
+                                            current_index=session[index_key],
+                                            total_words=len(session[words_key]),
+                                            last_result=session.get(last_result_key),
+                                            correct_answer=session.get(correct_answer_key, ''),
+                                            test_completed=True)  # 添加一个标记表示测试已完成
+
+
 
         # 获取下一个单词
         try:
@@ -238,6 +244,8 @@ def quiz_mode(group_id, mode):
     last_result = session.get(last_result_key)
     correct_answer = session.get(correct_answer_key, '')
 
+
+    test_completed = session.get(f'quiz_{group_id}_{mode}_completed', False)
     return render_template('quiz_mode.html',
                           group=group,
                           current_word=current_word,
@@ -245,7 +253,34 @@ def quiz_mode(group_id, mode):
                           current_index=session[index_key] + 1,
                           total_words=len(session[words_key]),
                           last_result=last_result,
-                          correct_answer=correct_answer)
+                          correct_answer=correct_answer,
+                          test_completed=test_completed)  # 传递测试完成标志
+
+# 添加一个新路由用于完成测试
+@practice_bp.route('/complete_quiz/<int:group_id>/<mode>')
+def complete_quiz(group_id, mode):
+    """完成测试并清除会话数据"""
+    session_key_prefix = f'quiz_{group_id}_{mode}_'
+    words_key = f'{session_key_prefix}words'
+    index_key = f'{session_key_prefix}index'
+    correct_count_key = f'{session_key_prefix}correct_count'
+    last_result_key = f'{session_key_prefix}last_result'
+    correct_answer_key = f'{session_key_prefix}correct_answer'
+    completed_key = f'quiz_{group_id}_{mode}_completed'
+    
+    # 清除测试相关的会话数据
+    keys_to_remove = [words_key, index_key, correct_count_key, last_result_key, 
+                      correct_answer_key, completed_key]
+    for key in keys_to_remove:
+        if key in session:
+            session.pop(key)
+    
+    flash('测试完成！', 'success')
+    return redirect(url_for('main.index'))
+
+
+
+
 
 
 @practice_bp.route('/exit_quiz/<int:group_id>/<mode>')
