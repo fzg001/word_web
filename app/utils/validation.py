@@ -1,24 +1,35 @@
 import re
 
 def validate_word_input(line):
-    # 去除空行
-    if not line or line.isspace():
-        return None, None
+    """验证并解析单词输入行"""
+    # 移除序号和前导空格
+    # 例如 "1. Word - 单词" => "Word - 单词"
+    line = re.sub(r'^\s*\d+[\.\)、]\s*', '', line.strip())
     
-    # 去除行首的数字序号（如 "1.", "2. ", "3、"）
-    line = re.sub(r'^\d+[.、\s]+', '', line.strip())
+    # 移除标签 <strong>, <em> 等
+    line = re.sub(r'<[^>]+>', '', line)
     
-    # 处理多种分隔符：中文破折号、英文短横线、空格等
-    match = re.split(r'[-—－\s]+', line, maxsplit=1)
-    if len(match) == 2:
-        eng, chn = match[0].strip(), match[1].strip()
+    # 识别常见分隔符
+    separators = [' - ', ':', '：', '-', '—', '–', ' : ']
+    separator_found = None
+    
+    for sep in separators:
+        if sep in line:
+            separator_found = sep
+            break
+    
+    if separator_found:
+        # 分割英文和中文部分
+        parts = line.split(separator_found, 1)  # 限制只分割一次
+        eng = parts[0].strip()
+        chn = parts[1].strip() if len(parts) > 1 else ''
         
-        # 去除英文周围的星号、加粗符号等格式标记
-        eng = re.sub(r'[*_\[\]<>"\']+', '', eng)
-        
-        # 去除中文周围可能的引号、括号等
+        # 清理英文和中文部分中可能存在的标点符号
+        eng = re.sub(r'[""''<>《》()（）[\]]+', '', eng)
         chn = re.sub(r'[""''<>《》()（）[\]]+', '', chn)
         
-        return eng.strip(), chn.strip()
+        # 确保两部分都非空
+        if eng and chn:
+            return eng.strip(), chn.strip()
     
     return None, None
