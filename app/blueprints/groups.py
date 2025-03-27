@@ -153,6 +153,9 @@ def update_order():
         
         # 从表单获取数据
         order_data = request.form.get('order_data')
+        # 获取来源页面信息
+        referer = request.form.get('referer', 'main')
+        
         if not order_data:
             flash('未收到排序数据', 'danger')
             return redirect(url_for('groups.manage_groups'))
@@ -175,8 +178,14 @@ def update_order():
         
         db.session.commit()
         flash('排序已成功保存', 'success')
-        return redirect(url_for('groups.manage_groups'))
+        
+        # 根据来源页面返回不同的页面
+        if referer == 'main':
+            return redirect(url_for('main.index'))
+        else:
+            return redirect(url_for('groups.manage_groups'))
+            
     except Exception as e:
         db.session.rollback()
         flash(f'排序保存失败: {str(e)}', 'danger')
-        return redirect(url_for('groups.manage_groups'))
+        return redirect(url_for('main.index'))

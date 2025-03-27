@@ -3,13 +3,30 @@
 
 {% block content %}
 <h1>单词组列表</h1>
-<div class="group-list">
+
+<!-- 添加拖放排序说明和控制按钮 -->
+<div class="sort-controls" style="margin-bottom: 20px;">
+    <button id="toggle-drag-mode" class="btn btn-secondary">
+        <span class="btn-icon">↕️</span> 开启卡片排序
+    </button>
+    <div id="drag-instructions" style="display: none; margin-top: 10px;" class="alert alert-info">
+        长按卡片可拖动排序。完成后点击"保存排序"按钮。
+    </div>
+    <div id="drag-buttons" style="display: none; margin-top: 10px;">
+        <button id="save-drag-order" class="btn btn-success">保存排序</button>
+        <button id="cancel-drag" class="btn btn-secondary">取消</button>
+    </div>
+</div>
+
+<div class="group-list" id="sortable-groups">
     {% for group in groups %}
     <div class="group-card 
         {% if group.stats.random_last_score == 1.0 %}diamond-card
         {% elif group.stats.last_score == 1.0 %}gold-card
         {% elif group.stats.study_count >= 3 %}bronze-card
-        {% endif %}">
+        {% endif %}"
+        data-id="{{ group.id }}"
+        data-order="{{ group.order_index or loop.index }}">
         <h2>{{ group.name }}</h2>
         <p>单词数量：{{ group.words.count() }}</p>
         <div class="stats">
@@ -30,7 +47,244 @@
         {% elif group.stats.study_count >= 3 %}
         <div class="card-badge bronze">青铜</div>
         {% endif %}
+        
+        <!-- 添加拖动手柄，默认隐藏 -->
+        <div class="drag-handle" style="display: none;">
+            <span>⋮⋮</span>
+        </div>
     </div>
     {% endfor %}
 </div>
+
+<!-- 添加拖放相关JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleDragBtn = document.getElementById('toggle-drag-mode');
+    const instructionsPanel = document.getElementById('drag-instructions');
+    const dragButtons = document.getElementById('drag-buttons');
+    const saveDragOrderBtn = document.getElementById('save-drag-order');
+    const cancelDragBtn = document.getElementById('cancel-drag');
+    const groupList = document.getElementById('sortable-groups');
+    const cards = groupList.querySelectorAll('.group-card');
+    const dragHandles = document.querySelectorAll('.drag-handle');
+    
+    let dragMode = false;
+    let originalOrder = [];
+    
+    // 保存原始顺序
+    function saveOriginalOrder() {
+        originalOrder = [];
+        cards.forEach(card => {
+            originalOrder.push({
+                id: card.dataset.id,
+                element: card
+            });
+        });
+    }
+    
+    // 恢复原始顺序
+    function restoreOriginalOrder() {
+        originalOrder.forEach(item => {
+            groupList.appendChild(item.element);
+        });
+    }
+    
+    // 切换拖放模式
+    toggleDragBtn.addEventListener('click', function() {
+        dragMode = !dragMode;
+        
+        if (dragMode) {
+            // 保存原始顺序
+            saveOriginalOrder();
+            
+            // 启用拖放
+            cards.forEach(card => {
+                card.setAttribute('draggable', 'true');
+                card.classList.add('draggable');
+            });
+            
+            // 显示拖动手柄
+            dragHandles.forEach(handle => {
+                handle.style.display = 'flex';
+            });
+            
+            // 更新UI
+            toggleDragBtn.textContent = '关闭卡片排序';
+            toggleDragBtn.classList.add('btn-warning');
+            toggleDragBtn.classList.remove('btn-secondary');
+            instructionsPanel.style.display = 'block';
+            dragButtons.style.display = 'block';
+            
+            // 禁用卡片内的按钮链接
+            groupList.querySelectorAll('.actions a').forEach(link => {
+                link.addEventListener('click', preventClickDuringDrag);
+                link.classList.add('disabled-during-drag');
+            });
+        } else {
+            // 关闭拖放模式
+            disableDragMode();
+        }
+    });
+    
+    // 关闭拖放模式
+    function disableDragMode() {
+        // 禁用拖放
+        cards.forEach(card => {
+            card.removeAttribute('draggable');
+            card.classList.remove('draggable');
+        });
+        
+        // 隐藏拖动手柄
+        dragHandles.forEach(handle => {
+            handle.style.display = 'none';
+        });
+        
+        // 更新UI
+        toggleDragBtn.textContent = '开启卡片排序';
+        toggleDragBtn.classList.remove('btn-warning');
+        toggleDragBtn.classList.add('btn-secondary');
+        instructionsPanel.style.display = 'none';
+        dragButtons.style.display = 'none';
+        
+        // 重新启用卡片内的按钮链接
+        groupList.querySelectorAll('.actions a').forEach(link => {
+            link.removeEventListener('click', preventClickDuringDrag);
+            link.classList.remove('disabled-during-drag');
+        });
+        
+        dragMode = false;
+    }
+    
+    // 阻止拖放模式下的点击
+    function preventClickDuringDrag(e) {
+        if (dragMode) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    }
+    
+    // 取消拖放排序
+    cancelDragBtn.addEventListener('click', function() {
+        restoreOriginalOrder();
+        disableDragMode();
+    });
+    
+    // 保存拖放排序
+    saveDragOrderBtn.addEventListener('click', function() {
+        const newOrder = [];
+        const currentCards = groupList.querySelectorAll('.group-card');
+        
+        currentCards.forEach((card, index) => {
+            newOrder.push({
+                id: parseInt(card.dataset.id),
+                order: index + 1
+            });
+    });
+
+
+    // 使用表单提交到后端保存
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ url_for("groups.update_order") }}';
+    
+    // 添加排序数据
+    const orderInput = document.createElement('input');
+    orderInput.type = 'hidden';
+    orderInput.name = 'order_data';
+    orderInput.value = JSON.stringify({ groups: newOrder });
+    
+    // 添加来源页面信息
+    const refererInput = document.createElement('input');
+    refererInput.type = 'hidden';
+    refererInput.name = 'referer';
+    refererInput.value = 'main';
+    
+    form.appendChild(orderInput);
+    form.appendChild(refererInput);
+    document.body.appendChild(form);
+    form.submit();
+        });
+    
+    // 拖放事件处理
+    let draggedItem = null;
+    
+    cards.forEach(card => {
+        // 长按触发拖动（移动设备支持）
+        let longPressTimer;
+        
+        card.addEventListener('touchstart', function(e) {
+            if (!dragMode) return;
+            
+            longPressTimer = setTimeout(() => {
+                this.classList.add('dragging');
+                draggedItem = this;
+            }, 500); // 长按500ms激活
+        });
+        
+        card.addEventListener('touchend', function() {
+            if (longPressTimer) clearTimeout(longPressTimer);
+            this.classList.remove('dragging');
+        });
+        
+        card.addEventListener('touchmove', function(e) {
+            if (!dragMode || !draggedItem) return;
+            
+            e.preventDefault(); // 防止页面滚动
+            
+            const touch = e.touches[0];
+            const pageY = touch.pageY;
+            
+            const afterElement = getDragAfterElement(groupList, pageY);
+            if (afterElement == null) {
+                groupList.appendChild(draggedItem);
+            } else {
+                groupList.insertBefore(draggedItem, afterElement);
+            }
+        });
+        
+        // 电脑拖放支持
+        card.addEventListener('dragstart', function() {
+            if (!dragMode) return;
+            
+            this.classList.add('dragging');
+            draggedItem = this;
+        });
+        
+        card.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+        });
+    });
+    
+    groupList.addEventListener('dragover', function(e) {
+        if (!dragMode) return;
+        
+        e.preventDefault();
+        const afterElement = getDragAfterElement(groupList, e.clientY);
+        const draggable = document.querySelector('.dragging');
+        
+        if (afterElement == null) {
+            groupList.appendChild(draggable);
+        } else {
+            groupList.insertBefore(draggable, afterElement);
+        }
+    });
+    
+    // 确定拖动后的位置
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('.group-card:not(.dragging)')];
+        
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+});
+</script>
 {% endblock %}

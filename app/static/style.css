@@ -981,3 +981,62 @@ nav a:hover::after {
 
 
 
+/* 拖放排序相关样式 */
+.group-card.draggable {
+    cursor: move;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.group-card.dragging {
+    opacity: 0.8;
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    z-index: 999;
+}
+
+.drag-handle {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    color: #999;
+    cursor: move;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.drag-handle:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* 禁用拖放模式下的链接 */
+.disabled-during-drag {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+/* 动画效果 */
+@keyframes card-wiggle {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+    100% { transform: translateX(0); }
+}
+
+.group-card.draggable:active {
+    animation: card-wiggle 0.3s 1;
+}
+
+/* 修改卡片列表布局，使其更适合拖放 */
+.group-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    min-height: 100px; /* 确保列表为空时有高度 */
+}

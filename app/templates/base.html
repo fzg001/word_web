@@ -24,7 +24,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} floating-alert {% if message == '测试完成！' or message == '背诵完成！' %}auto-dismiss{% endif %}">{{ message }}</div>
+                    <div class="alert alert-{{ category }} floating-alert {% if category == 'success' or message == '测试完成！' or message == '背诵完成！' %}auto-dismiss{% endif %}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
