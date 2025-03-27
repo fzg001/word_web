@@ -24,9 +24,14 @@
     <form method="POST" class="styled-form">
         <div class="form-group">
             <label for="group_name">组别名称</label>
-            <input type="text" id="group_name" name="group_name" required
-                class="form-control" placeholder="例如：生物学基础词汇" 
-                value="{{ group_name or '' }}">
+            <div class="input-with-button">
+                <input type="text" id="group_name" name="group_name" required
+                    class="form-control" placeholder="例如：生物学基础词汇"
+                    value="{{ group_name or '' }}">
+                <button type="button" id="ai-generate-btn" class="btn btn-secondary">
+                    <span class="btn-icon">🤖</span> AI生成
+                </button>
+            </div>
         </div>
         
         <div class="form-group">
@@ -46,4 +51,121 @@ Protein - 蛋白质
         </div>
     </form>
 </div>
+
+<!-- 添加加载效果样式 -->
+<style>
+.input-with-button {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-with-button .form-control {
+    flex: 1;
+}
+
+.ai-loading {
+    position: relative;
+}
+
+.ai-loading:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><circle cx="50" cy="50" r="32" stroke-width="8" stroke="%234285f4" stroke-dasharray="50.26548245743669 50.26548245743669" fill="none" stroke-linecap="round" transform="rotate(217.609 50 50)"><animateTransform attributeName="transform" type="rotate" dur="1s" repeatCount="indefinite" keyTimes="0;1" values="0 50 50;360 50 50"></animateTransform></circle></svg>') center center no-repeat;
+    background-size: 50px;
+    z-index: 10;
+    border-radius: 8px;
+}
+</style>
+
+<!-- 添加 AI 生成功能的 JavaScript -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM 已加载，准备设置事件监听器");
+    
+    const aiGenerateBtn = document.getElementById('ai-generate-btn');
+    const groupNameInput = document.getElementById('group_name');
+    const wordsTextarea = document.getElementById('words');
+    
+    // 检查元素是否成功获取
+    if (!aiGenerateBtn) console.error("无法找到 AI 生成按钮!");
+    if (!groupNameInput) console.error("无法找到组别名称输入框!");
+    if (!wordsTextarea) console.error("无法找到单词列表文本框!");
+    
+    console.log("为 AI 生成按钮添加点击事件监听器");
+    
+    aiGenerateBtn.addEventListener('click', async function() {
+        console.log("AI 生成按钮被点击");
+        const groupName = groupNameInput.value.trim();
+        
+        if (!groupName) {
+            alert('请先输入组别名称，例如：生物化学领域常用50词');
+            groupNameInput.focus();
+            return;
+        }
+        
+        console.log("准备发送请求，主题:", groupName);
+        
+        // 添加加载效果
+        wordsTextarea.classList.add('ai-loading');
+        aiGenerateBtn.disabled = true;
+        aiGenerateBtn.innerHTML = '<span class="btn-icon">⏳</span> 生成中...';
+        
+        try {
+            console.log("开始发送请求到:", '{{ url_for("settings.generate_ai_words") }}');
+            
+            const response = await fetch('{{ url_for("settings.generate_ai_words") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ topic: groupName })
+            });
+            
+            console.log("收到响应:", response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("错误响应内容:", errorText);
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    throw new Error(errorJson.error || `服务器错误(${response.status})`);
+                } catch (e) {
+                    throw new Error(`服务器返回错误: ${response.status} - ${errorText.substring(0, 100)}`);
+                }
+            }
+            
+            const data = await response.json();
+            console.log("解析响应:", data);
+            
+            if (data.success) {
+                wordsTextarea.value = data.words;
+                console.log("成功设置单词文本");
+            } else {
+                console.error("生成失败:", data.error);
+                alert('生成失败: ' + data.error);
+            }
+        } catch (error) {
+            console.error('AI生成错误:', error);
+            alert('生成过程中发生错误：' + error.message);
+        } finally {
+            // 移除加载效果
+            wordsTextarea.classList.remove('ai-loading');
+            aiGenerateBtn.disabled = false;
+            aiGenerateBtn.innerHTML = '<span class="btn-icon">🤖</span> AI生成';
+            console.log("请求处理完成");
+        }
+    });
+    
+    console.log("事件监听器设置完成");
+});
+</script>
+
+</script>
 {% endblock %}

@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+{% block title %}设置{% endblock %}
+
+{% block content %}
+<h1>系统设置</h1>
+
+<div class="settings-tabs">
+    <div class="tab active" data-tab="ai">AI 设置</div>
+    <div class="tab" data-tab="general">通用设置</div>
+    <div class="tab" data-tab="about">关于</div>
+</div>
+
+<div class="tab-content active" id="ai-settings">
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('settings.save_settings') }}" class="styled-form">
+            <div class="form-group">
+                <label for="model">AI 模型</label>
+                <input type="text" id="model" name="model" class="form-control" 
+                    value="{{ ai_settings.model }}" placeholder="例如: deepseek-ai/DeepSeek-V3">
+                <p class="form-hint">常用模型: deepseek-ai/DeepSeek-V3, Pro/deepseek-ai/DeepSeek-R1等</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="api_key">API 密钥</label>
+                <input type="password" id="api_key" name="api_key" class="form-control" 
+                    value="{{ ai_settings.api_key }}" placeholder="输入您的 API 密钥">
+                <p class="form-hint">请保管好您的 API 密钥，不要分享给他人</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="api_base_url">API 基础 URL</label>
+                <input type="text" id="api_base_url" name="api_base_url" class="form-control" 
+                    value="{{ ai_settings.api_base_url }}" placeholder="https://api.openai.com/v1">
+                <p class="form-hint">如使用代理或其他服务商，可修改此地址</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="temperature">温度 (创造性)</label>
+                <input type="range" id="temperature" name="temperature" min="0" max="1" step="0.1" 
+                    value="{{ ai_settings.temperature }}" class="form-range">
+                <div class="range-values">
+                    <span>精确 (0.0)</span>
+                    <span id="temp-value">{{ ai_settings.temperature }}</span>
+                    <span>创造性 (1.0)</span>
+                </div>
+                <p class="form-hint">较低的值生成更精确的内容，较高的值生成更有创意的内容</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="max_tokens">最大令牌数</label>
+                <input type="number" id="max_tokens" name="max_tokens" class="form-control" 
+                    value="{{ ai_settings.max_tokens }}" min="100" max="8000">
+                <p class="form-hint">限制 AI 回复的最大长度</p>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">保存设置</button>
+                <button type="button" id="test-api" class="btn btn-secondary">测试连接</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="tab-content" id="general-settings">
+    <div class="form-container">
+        <form class="styled-form">
+            <div class="form-group">
+                <label>主题</label>
+                <div class="theme-options">
+                    <label class="theme-option">
+                        <input type="radio" name="theme" value="light" checked>
+                        <span class="theme-preview light">浅色</span>
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="theme" value="dark">
+                        <span class="theme-preview dark">深色</span>
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="theme" value="auto">
+                        <span class="theme-preview auto"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <p class="notice">更多设置功能将在后续版本中添加</p>
+        </form>
+    </div>
+</div>
+
+<div class="tab-content" id="about-settings">
+    <div class="about-content">
+        <h2>WordWeb</h2>
+        <p class="version">版本: 1.0.0</p>
+        <p>WordWeb 是一个用于学习和记忆英语单词的应用程序。</p>
+        <p>通过创建单词组，您可以使用背诵模式和测试模式有效地学习英语单词。</p>
+
+        <!-- 添加GitHub链接 -->
+        <div class="github-info">
+            <p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                <a href="https://github.com/fzg001" target="_blank" class="github-link">GitHub: fzg001</a>
+            </p>
+        </div>
+
+        <p>© 2025 WordWeb. 保留所有权利。</p>
+    </div>
+</div>
+
+<style>
+.settings-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    background-color: #f5f5f5;
+    transition: all 0.2s ease;
+}
+
+.tab:hover {
+    background-color: #e9e9e9;
+}
+
+.tab.active {
+    background-color: var(--primary-color, #4285f4);
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.form-range {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e0e0e0;
+    outline: none;
+    border-radius: 4px;
+}
+
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary-color, #4285f4);
+    cursor: pointer;
+}
+
+.range-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.theme-options {
+    display: flex;
+    gap: 15px;
+}
+
+.theme-option {
+    cursor: pointer;
+}
+
+.theme-option input {
+    display: none;
+}
+
+.theme-preview {
+    display: block;
+    width: 100px;
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ddd;
+    transition: all 0.2s ease;
+}
+
+.theme-option input:checked + .theme-preview {
+    border-color: var(--primary-color, #4285f4);
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+}
+
+.theme-preview.light {
+    background-color: #fff;
+    color: #333;
+}
+
+.theme-preview.dark {
+    background-color: #333;
+    color: #fff;
+}
+
+.theme-preview.auto {
+    background: linear-gradient(to right, #fff 50%, #333 50%);
+    color: #333;
+    position: relative;
+}
+
+
+
+.about-content {
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 20px;
+}
+
+.about-content .version {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.notice {
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    margin-top: 30px;
+}
+
+
+
+.github-info {
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.github-info p {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    border: 1px solid #eaecef;
+    transition: all 0.2s ease;
+}
+
+.github-info p:hover {
+    background-color: #edf2f9;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.github-link {
+    color: #0366d6;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.github-link:hover {
+    text-decoration: underline;
+}
+
+
+
+
+</style>
+
+
+
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 标签页切换功能
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            
+            // 切换标签页激活状态
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // 切换内容区域
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabId}-settings`) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // 温度滑块值显示
+    const tempSlider = document.getElementById('temperature');
+    const tempValue = document.getElementById('temp-value');
+    
+    if (tempSlider && tempValue) {
+        tempSlider.addEventListener('input', function() {
+            tempValue.textContent = this.value;
+        });
+    }
+    
+    // API 测试功能
+    const testApiBtn = document.getElementById('test-api');
+    if (testApiBtn) {
+        testApiBtn.addEventListener('click', async function() {
+            const apiKey = document.getElementById('api_key').value;
+            const apiBaseUrl = document.getElementById('api_base_url').value;
+            const model = document.getElementById('model').value;
+            
+            if (!apiKey) {
+                alert('请先输入 API 密钥');
+                return;
+            }
+            
+            testApiBtn.disabled = true;
+            testApiBtn.textContent = '测试中...';
+            
+            try {
+                const response = await fetch('{{ url_for("settings.generate_ai_words") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ topic: '测试连接，请提供3个简单的英语单词及翻译' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('API 连接测试成功！');
+                } else {
+                    alert('API 连接测试失败: ' + data.error);
+                }
+            } catch (error) {
+                alert('测试过程中发生错误: ' + error);
+            } finally {
+                testApiBtn.disabled = false;
+                testApiBtn.textContent = '测试连接';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+
+
+<style>
+    /* 修改现有样式 */
+    .theme-preview.auto {
+        background: linear-gradient(to right, #fff 50%, #333 50%);
+        color: transparent; /* 隐藏文本 */
+        position: relative;
+    }
+    
+    .theme-preview.auto::after {
+        content: '自动';
+        position: absolute;
+        color: #fff;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .theme-preview.auto::before {
+        content: '自动';
+        position: absolute;
+        color: #333;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    /* 防止内部文本显示 */
+    .theme-option input[type="radio"] + .theme-preview.auto span {
+        display: none;
+    }
+    </style>
