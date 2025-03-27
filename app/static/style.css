@@ -1148,3 +1148,327 @@ nav a:hover::after {
     padding: 0 !important;
     border: 0 !important;
 }
+
+
+
+/* 视图切换控件样式 */
+.view-switch-controls {
+    display: flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.view-switch-group {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.view-label {
+    margin-right: 10px;
+    font-weight: 500;
+    color: #5f6368;
+}
+
+.view-options {
+    display: flex;
+    gap: 8px;
+}
+
+.view-option {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.view-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.view-chip {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    background-color: #f5f5f5;
+    color: #5f6368;
+    border: 1px solid #ddd;
+}
+
+.view-option input[type="radio"]:checked + .view-chip {
+    background-color: var(--primary-color, #4285f4);
+    color: white;
+    border-color: var(--primary-color, #4285f4);
+    box-shadow: 0 2px 4px rgba(66, 133, 244, 0.25);
+}
+
+/* 紧凑视图卡片样式 */
+.compact-view .group-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.compact-view .group-card {
+    height: 140px;
+    width: 140px;
+    padding: 10px;
+    position: relative;
+    perspective: 1000px;
+    margin: 0 auto;
+    overflow: visible;
+    transition: transform 0.3s ease;
+}
+
+/* 紧凑视图卡片内容隐藏 */
+.compact-view .group-card p,
+.compact-view .group-card .stats,
+.compact-view .group-card .actions,
+.compact-view .group-card .card-badge {
+    display: none;
+}
+
+/* 紧凑视图卡片标题居中 */
+.compact-view .group-card h2 {
+    font-size: 0.95rem;
+    text-align: center;
+    margin: 0;
+    max-height: 120px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* 紧凑视图卡片翻转效果 */
+.compact-view .group-card .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.compact-view .group-card:hover .card-inner {
+    transform: rotateY(180deg);
+}
+
+.compact-view .card-front,
+.compact-view .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.compact-view .card-back {
+    transform: rotateY(180deg);
+    gap: 8px;
+    padding: 10px;
+}
+
+/* 紧凑视图卡片背面按钮 */
+.compact-view .back-btn {
+    width: 100%;
+    padding: 6px 0;
+    font-size: 0.8rem;
+    text-align: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+}
+
+.compact-view .back-btn.study {
+    background: linear-gradient(135deg, #4285f4, #5e97f6);
+}
+
+.compact-view .back-btn.order {
+    background: linear-gradient(135deg, #fbbc05, #ffd666);
+}
+
+.compact-view .back-btn.random {
+    background: linear-gradient(135deg, #34a853, #41c464);
+}
+
+.compact-view .back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+}
+
+/* 保持卡片级别样式 */
+.compact-view .diamond-card {
+    background: linear-gradient(145deg, #e6f7ff, #f2fcff);
+    border: 1px solid #b9f2ff;
+    box-shadow: 0 4px 8px rgba(0, 191, 255, 0.2);
+}
+
+.compact-view .gold-card {
+    background: linear-gradient(145deg, #fff7e6, #fffcf2);
+    border: 1px solid #ffd700;
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.2);
+}
+
+.compact-view .bronze-card {
+    background: linear-gradient(145deg, #fff, #f5f3f0);
+    border: 1px solid #cd7f32;
+    box-shadow: 0 4px 8px rgba(205, 127, 50, 0.1);
+}
+
+.compact-view .basic-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 小圆点标记卡片级别 */
+.compact-view .diamond-card::before,
+.compact-view .gold-card::before,
+.compact-view .bronze-card::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 5;
+}
+
+.compact-view .diamond-card::before {
+    background: linear-gradient(135deg, #a5f3ff, #0078a3);
+    box-shadow: 0 0 5px rgba(0, 120, 163, 0.5);
+}
+
+.compact-view .gold-card::before {
+    background: linear-gradient(135deg, #ffd700, #b8860b);
+    box-shadow: 0 0 5px rgba(184, 134, 11, 0.5);
+}
+
+.compact-view .bronze-card::before {
+    background: linear-gradient(135deg, #cd7f32, #8b4513);
+    box-shadow: 0 0 5px rgba(139, 69, 19, 0.5);
+}
+
+
+
+/* 确保只在紧凑视图下显示卡片背面 */
+.card-back {
+    display: none; /* 默认情况下隐藏卡片背面 */
+}
+
+/* 紧凑视图下才显示卡片背面 */
+.compact-view .card-back {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    transform: rotateY(180deg);
+}
+
+/* 修复紧凑视图中卡片正面和背面的样式 */
+.compact-view .card-front {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* 紧凑视图卡片背面按钮改进 */
+.compact-view .back-btn {
+    width: 80%; /* 减小宽度，避免超出边界 */
+    padding: 6px 0;
+    font-size: 0.8rem;
+    text-align: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    margin: 4px 0; /* 按钮之间增加间距 */
+}
+
+/* 确保卡片内容居中 */
+.compact-view .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+
+/* 增强紧凑视图下的拖放体验 */
+.compact-view .group-card.draggable {
+    cursor: move;
+}
+
+.compact-view .group-card.dragging {
+    opacity: 0.8;
+    transform: scale(1.05);
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 紧凑视图下拖动手柄位置调整 */
+.compact-view .drag-handle {
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* 拖放目标位置指示器 */
+.compact-view .group-card.drag-target-before::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary-color, #4285f4);
+    border-radius: 2px;
+    z-index: 20;
+}
+
+.compact-view .group-card.drag-target-after::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary-color, #4285f4);
+    border-radius: 2px;
+    z-index: 20;
+}

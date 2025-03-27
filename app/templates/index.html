@@ -18,6 +18,24 @@
             <button id="cancel-drag" class="btn btn-secondary">取消</button>
         </div>
     </div>
+
+
+    <!-- 视图切换控制区 -->
+    <div class="view-switch-controls">
+        <div class="view-switch-group">
+            <span class="view-label">卡片视图：</span>
+            <div class="view-options">
+                <label class="view-option">
+                    <input type="radio" name="card-view" value="default" checked>
+                    <span class="view-chip default">默认</span>
+                </label>
+                <label class="view-option">
+                    <input type="radio" name="card-view" value="compact">
+                    <span class="view-chip compact">紧凑</span>
+                </label>
+            </div>
+        </div>
+    </div>
     
     <!-- 新增筛选控制区 -->
     <div class="filter-controls">
@@ -43,7 +61,6 @@
     </div>
 </div>
 
-
 <div class="group-list" id="sortable-groups">
     {% for group in groups %}
     <div class="group-card 
@@ -55,31 +72,43 @@
         data-id="{{ group.id }}"
         data-type="{% if group.stats.random_last_score == 1.0 %}diamond{% elif group.stats.last_score == 1.0 %}gold{% elif group.stats.study_count >= 3 %}bronze{% else %}basic{% endif %}"
         data-order="{{ group.order_index or loop.index }}">
-        <h2>{{ group.name }}</h2>
-        <p>单词数量：{{ group.words.count() }}</p>
-        <div class="stats">
-            <span>背诵次数：{{ group.stats.study_count }}</span>
-            <span>顺序测试正确率：{{ "%.1f"|format(group.stats.last_score*100) }}%</span>
-            <span>乱序测试正确率：{{ "%.1f"|format((group.stats.random_last_score or 0)*100) }}%</span>
-        </div>
-        <div class="actions">
-            <a href="{{ url_for('practice.study_mode', group_id=group.id) }}" class="btn glass-btn study">背诵模式</a>
-            <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='order') }}" class="btn glass-btn order">顺序测试</a>
-            <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='random') }}" class="btn glass-btn random">乱序测试</a>
-        </div>
         
-        {% if group.stats.random_last_score == 1.0 %}
-        <div class="card-badge diamond">钻石</div>
-        {% elif group.stats.last_score == 1.0 %}
-        <div class="card-badge gold">黄金</div>
-        {% elif group.stats.study_count >= 3 %}
-        <div class="card-badge bronze">青铜</div>
-        {% endif %}
+        <!-- 添加卡片内部容器用于翻转效果 -->
+        <div class="card-inner">
+            <!-- 卡片正面 -->
+            <div class="card-front">
+                <h2>{{ group.name }}</h2>
+                <p>单词数量：{{ group.words.count() }}</p>
+                <div class="stats">
+                    <span>背诵次数：{{ group.stats.study_count }}</span>
+                    <span>顺序测试正确率：{{ "%.1f"|format(group.stats.last_score*100) }}%</span>
+                    <span>乱序测试正确率：{{ "%.1f"|format((group.stats.random_last_score or 0)*100) }}%</span>
+                </div>
+                <div class="actions">
+                    <a href="{{ url_for('practice.study_mode', group_id=group.id) }}" class="btn glass-btn study">背诵模式</a>
+                    <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='order') }}" class="btn glass-btn order">顺序测试</a>
+                    <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='random') }}" class="btn glass-btn random">乱序测试</a>
+                </div>
+                
+                {% if group.stats.random_last_score == 1.0 %}
+                <div class="card-badge diamond">钻石</div>
+                {% elif group.stats.last_score == 1.0 %}
+                <div class="card-badge gold">黄金</div>
+                {% elif group.stats.study_count >= 3 %}
+                <div class="card-badge bronze">青铜</div>
+                {% endif %}
+            </div>
+            
+            <!-- 卡片背面 (小卡片翻转后显示) -->
+            <div class="card-back">
+                <a href="{{ url_for('practice.study_mode', group_id=group.id) }}" class="back-btn study">背诵</a>
+                <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='order') }}" class="back-btn order">顺序</a>
+                <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='random') }}" class="back-btn random">乱序</a>
+            </div>
+        </div>
         
         <!-- 添加拖动手柄，默认隐藏 -->
-        <div class="drag-handle" style="display: none;">
-            <span>⋮⋮</span>
-        </div>
+
     </div>
     {% endfor %}
 </div>
@@ -255,15 +284,17 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.remove('dragging');
         });
         
+        // 更新触摸拖放事件
         card.addEventListener('touchmove', function(e) {
             if (!dragMode || !draggedItem) return;
             
             e.preventDefault(); // 防止页面滚动
             
             const touch = e.touches[0];
+            const pageX = touch.pageX;
             const pageY = touch.pageY;
             
-            const afterElement = getDragAfterElement(groupList, pageY);
+            const afterElement = getDragAfterElement(groupList, pageX, pageY);
             if (afterElement == null) {
                 groupList.appendChild(draggedItem);
             } else {
@@ -284,11 +315,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // 更新鼠标拖放事件
     groupList.addEventListener('dragover', function(e) {
         if (!dragMode) return;
         
         e.preventDefault();
-        const afterElement = getDragAfterElement(groupList, e.clientY);
+        const afterElement = getDragAfterElement(groupList, e.clientX, e.clientY);
         const draggable = document.querySelector('.dragging');
         
         if (afterElement == null) {
@@ -298,21 +330,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 确定拖动后的位置
-    function getDragAfterElement(container, y) {
+    // 确定拖动后的位置- 改进版本，适应不同视图模式
+ 
+    function getDragAfterElement(container, x, y) {
+        const isCompactView = document.querySelector('.container').classList.contains('compact-view');
         const draggableElements = [...container.querySelectorAll('.group-card:not(.dragging)')];
         
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect();
-            const offset = y - box.top - box.height / 2;
-            
-            if (offset < 0 && offset > closest.offset) {
-                return { offset: offset, element: child };
-            } else {
-                return closest;
-            }
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
+        if (isCompactView) {
+            // 紧凑视图下：考虑卡片的二维网格布局
+            // 计算哪张卡片与拖动位置最近，考虑 X 和 Y 坐标
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                
+                // 计算拖动点到卡片中心的距离
+                const centerX = box.left + box.width / 2;
+                const centerY = box.top + box.height / 2;
+                const distanceSquared = Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2);
+                
+                // 我们只关心拖动点上方和左侧的卡片
+                const isBefore = (y < box.top + box.height / 2) || 
+                                (y < box.top + box.height + 20 && x < box.left);
+                
+                if (isBefore && (!closest.element || distanceSquared < closest.distance)) {
+                    return { distance: distanceSquared, element: child };
+                } else {
+                    return closest;
+                }
+            }, { distance: Infinity }).element;
+        } else {
+            // 默认视图下：主要考虑垂直位置
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
     }
+
+
+
+
+
+
 });
 
 
@@ -380,6 +444,71 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+
+// 视图切换功能
+document.addEventListener('DOMContentLoaded', function() {
+    const viewOptions = document.querySelectorAll('input[name="card-view"]');
+    const container = document.querySelector('.container');
+    
+    // 从localStorage加载已保存的视图设置
+    const savedView = localStorage.getItem('wordweb_card_view');
+    if (savedView) {
+        // 设置已保存的视图
+        viewOptions.forEach(option => {
+            if (option.value === savedView) {
+                option.checked = true;
+                applyCardView(savedView);
+            }
+        });
+    }
+    
+    // 监听视图选择变化
+    viewOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            if (this.checked) {
+                const viewType = this.value;
+                applyCardView(viewType);
+                
+                // 保存设置到localStorage
+                localStorage.setItem('wordweb_card_view', viewType);
+            }
+        });
+    });
+    
+    // 应用卡片视图类型
+
+    function applyCardView(viewType) {
+        if (viewType === 'compact') {
+            container.classList.add('compact-view');
+            
+            // 确保在紧凑视图下大卡片正面的内容清晰可见
+            document.querySelectorAll('.card-front').forEach(front => {
+                if (front.querySelector('h2')) {
+                    front.style.position = 'absolute';
+                }
+            });
+            
+            // 确保小卡片背面按钮可点击
+            document.querySelectorAll('.back-btn').forEach(btn => {
+                btn.style.display = 'block';
+            });
+        } else {
+            container.classList.remove('compact-view');
+            
+            // 恢复默认视图下的样式
+            document.querySelectorAll('.card-front').forEach(front => {
+                front.style.position = '';
+            });
+            
+            // 隐藏小卡片背面按钮
+            document.querySelectorAll('.back-btn').forEach(btn => {
+                btn.style.display = 'none';
+            });
+        }
+    }
+
+
+});
 
 </script>
 {% endblock %}
