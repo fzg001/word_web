@@ -40,7 +40,7 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 ### 1. 克隆项目
 
 ```Bash
-git clone https://github.com/yourusername/wordweb.git
+https://github.com/fzg001/word_web.git
 cd wordweb
 ```
 
@@ -66,7 +66,7 @@ SECRET_KEY=your_secret_key
 DATABASE_URL=sqlite:///wordweb.db
 ```
 
-### 5. 配置 AI 设置（非必须，后续可从应用的设置界面进行配置）
+### 5. 配置 AI 设置（非必须）
 
 在 `app/config` 目录下创建 `ai_settings.json` 文件，并添加以下内容：
 
@@ -80,7 +80,7 @@ DATABASE_URL=sqlite:///wordweb.db
 }
 ```
 
-请将 `your_api_key` 替换为你自己的 OpenAI API 密钥。
+
 
 ### 6. 初始化数据库
 
