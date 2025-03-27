@@ -1136,3 +1136,15 @@ nav a:hover::after {
         margin-top: 10px;
     }
 }
+
+/* 确保隐藏卡片的样式强制隐藏 */
+.hidden-card {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+}

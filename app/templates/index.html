@@ -53,10 +53,7 @@
         {% else %}basic-card
         {% endif %}"
         data-id="{{ group.id }}"
-        data-type="{% if group.stats.random_last_score == 1.0 %}diamond
-                  {% elif group.stats.last_score == 1.0 %}gold
-                  {% elif group.stats.study_count >= 3 %}bronze
-                  {% else %}basic{% endif %}"
+        data-type="{% if group.stats.random_last_score == 1.0 %}diamond{% elif group.stats.last_score == 1.0 %}gold{% elif group.stats.study_count >= 3 %}bronze{% else %}basic{% endif %}"
         data-order="{{ group.order_index or loop.index }}">
         <h2>{{ group.name }}</h2>
         <p>单词数量：{{ group.words.count() }}</p>
@@ -318,23 +315,45 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
 // 添加筛选功能
 document.addEventListener('DOMContentLoaded', function() {
     const filterCheckboxes = document.querySelectorAll('.filter-btn input[type="checkbox"]');
     const cards = document.querySelectorAll('.group-card');
     
-    // 初始状态所有卡片都显示
-    let activeFilters = {
+    // 从localStorage加载筛选状态
+    let activeFilters = loadFiltersFromStorage() || {
         diamond: true,
         gold: true,
         bronze: true,
         basic: true
     };
     
-    // 应用筛选
+    // 初始化复选框状态
+    filterCheckboxes.forEach(checkbox => {
+        const filterType = checkbox.dataset.filter;
+        checkbox.checked = activeFilters[filterType];
+    });
+    
+    // 初始应用筛选
+    applyFilters();
+    
+    // 保存筛选状态到localStorage
+    function saveFiltersToStorage() {
+        localStorage.setItem('wordweb_filters', JSON.stringify(activeFilters));
+    }
+    
+    // 从localStorage加载筛选状态
+    function loadFiltersFromStorage() {
+        const savedFilters = localStorage.getItem('wordweb_filters');
+        return savedFilters ? JSON.parse(savedFilters) : null;
+    }
+    
+    // 应用筛选 - 修复的逻辑
     function applyFilters() {
         cards.forEach(card => {
-            const cardType = card.dataset.type;
+            // 获取卡片类型并清理可能的空白字符
+            const cardType = card.dataset.type.trim();
             
             if (activeFilters[cardType]) {
                 card.classList.remove('hidden-card');
@@ -342,6 +361,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 card.classList.add('hidden-card');
             }
         });
+        
+        // 调试输出当前筛选状态
+        console.log('应用筛选:', activeFilters);
+        console.log('卡片类型:', Array.from(cards).map(c => c.dataset.type.trim()));
     }
     
     // 监听筛选复选框变化
@@ -350,7 +373,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const filterType = this.dataset.filter;
             activeFilters[filterType] = this.checked;
             
+            // 应用并保存筛选设置
             applyFilters();
+            saveFiltersToStorage();
         });
     });
 });
