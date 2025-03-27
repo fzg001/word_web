@@ -11,18 +11,7 @@
                 class="form-control" placeholder="例如：生物学基础词汇" value="{{ group.name }}">
         </div>
         
-        <!-- 添加搜索框 -->
-        <div class="search-container">
-            <label for="word-search">搜索单词</label>
-            <div class="search-input-wrapper">
-                <input type="text" id="word-search" class="form-control" 
-                    placeholder="输入英文或中文关键词搜索...">
-                <button type="button" id="clear-search" class="search-clear-btn">×</button>
-            </div>
-            <div class="search-stats">
-                <span id="match-count">0</span> 个匹配 / 共 <span id="total-count">0</span> 个单词
-            </div>
-        </div>
+       
         
         <div class="form-group">
             <label for="words">单词列表</label>
@@ -38,42 +27,7 @@
     </form>
 </div>
 
-<style>
-.search-container {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 3px solid var(--primary-color, #4285f4);
-}
 
-.search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.search-clear-btn {
-    position: absolute;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #666;
-    cursor: pointer;
-    display: none;
-}
-
-.search-stats {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.highlight {
-    background-color: #fff3cd;
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

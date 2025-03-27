@@ -80,7 +80,13 @@ def group_detail(group_id):
 @groups_bp.route('/manage')
 def manage_groups():
     """显示所有组别管理页面"""
-    groups = WordGroup.query.all()
+    # 按order_index排序，未设置的排在后面
+    groups = WordGroup.query.order_by(
+        db.case(
+            (WordGroup.order_index == 0, 999999),  # 将未设置排序的组排在最后
+            else_=WordGroup.order_index
+        )
+    ).all()
     return render_template('manage_groups.html', groups=groups)
 
 @groups_bp.route('/<int:group_id>/edit', methods=['GET', 'POST'])
