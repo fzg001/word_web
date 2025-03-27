@@ -6,14 +6,17 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
         (function() {
-            // 立即读取本地存储的视图设置
-            var savedView = localStorage.getItem('wordweb_card_view');
-            // 如果已保存为紧凑视图，则提前应用类名
-            if (savedView === 'compact') {
-                // 使用标记来通知DOM加载后的脚本不要重复应用视图
-                document.documentElement.className += ' view-set-from-storage';
-                // 由于container还未加载，先在html元素上标记
-                document.documentElement.className += ' compact-view-pending';
+            // 立即读取并应用主题设置，防止闪烁
+            var savedTheme = localStorage.getItem('wordweb_theme') || 'light';
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark-theme');
+            } else if (savedTheme === 'auto') {
+                // 根据当前时间自动设置深浅色模式
+                var currentHour = new Date().getHours();
+                if (currentHour >= 18 || currentHour < 6) {
+                    document.documentElement.classList.add('dark-theme');
+                }
             }
         })();
     </script>
@@ -102,6 +105,48 @@
                 });
             });
         });
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+        // 应用主题
+        const savedTheme = localStorage.getItem('wordweb_theme') || 'light';
+        
+        // 应用主题到body
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else if (savedTheme === 'auto') {
+            // 根据时间自动应用
+            const currentHour = new Date().getHours();
+            if (currentHour >= 18 || currentHour < 6) {
+                document.body.classList.add('dark-theme');
+            }
+        }
+        
+        // 自动主题的定时检查
+        if (savedTheme === 'auto') {
+            setInterval(function() {
+                const currentHour = new Date().getHours();
+                const isDarkTime = currentHour >= 18 || currentHour < 6;
+                const hasDarkClass = document.body.classList.contains('dark-theme');
+                
+                if (isDarkTime && !hasDarkClass) {
+                    document.body.classList.add('dark-theme');
+                } else if (!isDarkTime && hasDarkClass) {
+                    document.body.classList.remove('dark-theme');
+                }
+            }, 60000); // 每分钟检查一次
+        }
+        
+        // 现有代码...
+    });
+
+
+
+
+
+
+
+
     </script>
 </body>
 </html>

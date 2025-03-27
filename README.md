@@ -11,15 +11,15 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 - **测试模式**：包括顺序和乱序两种测试模式，自动计算正确率并记录在数据库中。
 - **数据验证**：在创建和编辑单词组时，对输入的单词进行格式验证，确保数据的准确性。
 
-![image-20250327133003018](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327133003018.png)
+![image-20250327235922406](C:/Users/DELL/AppData/Roaming/Typora/typora-user-images/image-20250327235922406.png)
 
 ![image-20250327133015326](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327133015326.png)
 
 ![image-20250327133029748](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327133029748.png)
 
-## v1.1.0 新增特性
+##  新增重要特性
 
-### AI 大模型生成单词
+### v1.1.0：AI 大模型生成单词
 
 在创建新单词组时，用户可以利用 AI 大模型根据指定主题生成单词列表。只需输入想要的单词主题，点击“AI 生成”按钮，系统将自动调用大模型生成相关单词，为用户节省手动输入单词的时间和精力。
 

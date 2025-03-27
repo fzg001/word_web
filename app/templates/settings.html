@@ -64,23 +64,39 @@
 <div class="tab-content" id="general-settings">
     <div class="form-container">
         <form class="styled-form">
+
+
+
             <div class="form-group">
                 <label>主题</label>
                 <div class="theme-options">
                     <label class="theme-option">
-                        <input type="radio" name="theme" value="light" checked>
-                        <span class="theme-preview light">浅色</span>
+                        <input type="radio" name="theme" value="light">
+                        <span class="theme-preview light">
+                            <i class="theme-icon sun-icon"></i>
+                            <span>浅色</span>
+                        </span>
                     </label>
                     <label class="theme-option">
                         <input type="radio" name="theme" value="dark">
-                        <span class="theme-preview dark">深色</span>
+                        <span class="theme-preview dark">
+                            <i class="theme-icon moon-icon"></i>
+                            <span>深色</span>
+                        </span>
                     </label>
                     <label class="theme-option">
                         <input type="radio" name="theme" value="auto">
-                        <span class="theme-preview auto"></span>
+                        <span class="theme-preview auto">
+                            <i class="theme-icon auto-icon"></i>
+                            <span>自动</span>
+                        </span>
                     </label>
                 </div>
+                <p class="form-hint">自动模式将根据时间自动切换：6:00-18:00为浅色，18:00-6:00为深色</p>
             </div>
+
+
+
             
             <p class="notice">更多设置功能将在后续版本中添加</p>
         </form>
@@ -358,38 +374,86 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // 主题设置功能
+    const themeOptions = document.querySelectorAll('input[name="theme"]');
+    
+    // 加载已保存的主题设置
+    const savedTheme = localStorage.getItem('wordweb_theme') || 'light';
+    
+    // 设置单选按钮状态
+    themeOptions.forEach(option => {
+        if (option.value === savedTheme) {
+            option.checked = true;
+        }
+    });
+    
+    // 主题切换功能
+    function setTheme(theme) {
+        // 移除现有主题类
+        document.body.classList.remove('dark-theme', 'light-theme');
+        
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else if (theme === 'auto') {
+            // 自动模式 - 根据时间决定
+            const currentHour = new Date().getHours();
+            if (currentHour >= 18 || currentHour < 6) {
+                document.body.classList.add('dark-theme');
+            }
+        }
+        
+        // 保存主题设置到localStorage
+        localStorage.setItem('wordweb_theme', theme);
+    }
+    
+    // 监听主题切换事件
+    themeOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            if (this.checked) {
+                setTheme(this.value);
+            }
+        });
+    });
+    
+    // 初始应用主题
+    setTheme(savedTheme);
+    
+    // 如果是自动模式，设置定时检查
+    function checkAutoTheme() {
+        const currentTheme = localStorage.getItem('wordweb_theme');
+        if (currentTheme === 'auto') {
+            const currentHour = new Date().getHours();
+            const isDarkTime = currentHour >= 18 || currentHour < 6;
+            const hasDarkClass = document.body.classList.contains('dark-theme');
+            
+            if (isDarkTime && !hasDarkClass) {
+                document.body.classList.add('dark-theme');
+            } else if (!isDarkTime && hasDarkClass) {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+    }
+    
+    // 如果是自动模式，每10分钟检查一次
+    if (savedTheme === 'auto') {
+        setInterval(checkAutoTheme, 600000);
+    }
+    
+
+});
+
+
+
+
+
+
+
 </script>
 {% endblock %}
 
 
-<style>
-    /* 修改现有样式 */
-    .theme-preview.auto {
-        background: linear-gradient(to right, #fff 50%, #333 50%);
-        color: transparent; /* 隐藏文本 */
-        position: relative;
-    }
-    
-    .theme-preview.auto::after {
-        content: '自动';
-        position: absolute;
-        color: #fff;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    
-    .theme-preview.auto::before {
-        content: '自动';
-        position: absolute;
-        color: #333;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    
-    /* 防止内部文本显示 */
-    .theme-option input[type="radio"] + .theme-preview.auto span {
-        display: none;
-    }
-    </style>
