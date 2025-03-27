@@ -31,7 +31,7 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 
 ## 技术栈
 
-- **后端**：Python 3.12.9、Flask 3.0.2、Flask - SQLAlchemy 3.1.1、Flask - Migrate 4.0.5
+- **后端**：Python 3.10.16、Flask 3.0.2、Flask - SQLAlchemy 3.1.1、Flask - Migrate 4.0.5
 - **前端**：HTML、CSS、JavaScript
 - **数据库**：SQLite
 
@@ -97,6 +97,24 @@ python run.py
 ```
 
 打开浏览器，访问 `http://0.0.0.0:5000` 即可开始使用。
+
+### 8. 使用 Docker 部署
+
+#### 8.1 拉取 Docker 镜像
+
+你可以从 Docker Hub 拉取预构建的 WordWeb 镜像。请确保你已经安装了 Docker，然后运行以下命令：
+
+```bash
+docker pull rheshyike/wordweb:latest
+```
+
+#### 8.2 运行 Docker 容器
+
+拉取镜像后，使用以下命令来运行 Docker 容器：
+
+```bash
+docker run -p 5000:5000 rheshyike/wordweb:latest
+```
 
 ## 使用步骤
 

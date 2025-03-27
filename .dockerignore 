@@ -1,0 +1,9 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+*.db
+*.db.bak
+venv
+.env
+app/config/ai_settings.json

@@ -25,3 +25,7 @@ ENV/
 
 # 迁移缓存
 migrations/__pycache__/
+
+
+Dockerfile
+.dockerignore 
