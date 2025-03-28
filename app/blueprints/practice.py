@@ -4,10 +4,6 @@ from app import db
 import random
 
 
-
-
-
-
 practice_bp = Blueprint('practice', __name__)
 def get_practice_words(group, mode):
     """获取练习单词列表"""

@@ -46,12 +46,7 @@
                     {% if '[deletion-prompt]' in message %}
                         <div class="alert alert-{{ category }} floating-alert deletion-prompt" data-group-id="{{ session.get('deletion_group_id', '') }}">
                             {{ message|replace('[deletion-prompt]', '') }}
-                            <!-- 添加实际按钮 -->
-                            <div class="deletion-buttons">
-                                <button onclick="handleDeletionAction('l')" class="btn btn-outline">清除标记</button>
-                                <button onclick="handleDeletionAction('n')" class="btn btn-outline">取消</button>
-                                <button onclick="handleDeletionAction('y')" class="btn btn-danger">确认删除</button>
-                            </div>
+
                         </div>
                     {% else %}
                         <div class="alert alert-{{ category }} floating-alert {% if category == 'success' or message == '测试完成！' or message == '背诵完成！' %}auto-dismiss{% endif %}">{{ message }}</div>

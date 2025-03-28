@@ -1842,7 +1842,7 @@ nav a:hover::after {
     content: '已标记';
     position: absolute;
     top: 10px;
-    left: 10px;
+    right: 10px;
     background: #4285f4;
     color: white;
     padding: 3px 8px;
@@ -1860,7 +1860,7 @@ nav a:hover::after {
     content: '待删除';
     position: absolute;
     top: 10px;
-    left: 10px;
+    right: 10px;
     background: #dc3545;
     color: white;
     padding: 3px 8px;
@@ -1905,65 +1905,14 @@ nav a:hover::after {
     box-shadow: 0 1px 1px rgba(0,0,0,0.1);
 }
 
-/* 删除提示样式 */
-.deletion-prompt {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    z-index: 1100;
-    max-width: 500px;
-    text-align: center;
-}
-
-.deletion-prompt .key-hint {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 10px;
-}
 
 
-/* 更新删除提示样式 */
-.deletion-prompt {
-    position: fixed;
-    top: 20px;
-    right: 20px; /* 改为右上角显示，而不是居中 */
-    left: auto;
-    transform: none;
-    background: var(--card-bg, white);
-    color: var(--text-color, #333);
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-    z-index: 1100;
-    max-width: 350px;
-    text-align: left;
-    border-left: 4px solid #dc3545;
-    animation: slide-in-right 0.3s ease-out;
-}
 
 @keyframes slide-in-right {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
 
-.deletion-prompt h4 {
-    margin-top: 0;
-    margin-bottom: 8px;
-    font-size: 16px;
-    font-weight: 600;
-}
-
-.deletion-prompt p {
-    margin-bottom: 15px;
-    font-size: 14px;
-    opacity: 0.9;
-}
 
 /* 改进按钮布局 */
 .deletion-buttons {
@@ -2092,21 +2041,4 @@ nav a.active {
     }
 }
 
-/* 统一使用 .deletion-prompt 类名 */
-.deletion-prompt {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    left: auto;
-    transform: none;
-    background: var(--card-bg, white);
-    color: var(--text-color, #333);
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-    z-index: 1100;
-    max-width: 350px;
-    text-align: left;
-    border-left: 4px solid #dc3545;
-    animation: slide-in-right 0.3s ease-out;
-}
+
