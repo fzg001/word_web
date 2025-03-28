@@ -43,7 +43,20 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} floating-alert {% if category == 'success' or message == '测试完成！' or message == '背诵完成！' %}auto-dismiss{% endif %}">{{ message }}</div>
+                    {% if '[deletion-prompt]' in message %}
+                        <div class="alert alert-{{ category }} floating-alert deletion-prompt" data-group-id="{{ session.get('deletion_group_id', '') }}">
+                            {{ message|replace('[deletion-prompt]', '') }}
+
+                            <!-- 添加实际按钮 -->
+                            <div class="deletion-buttons">
+                                <button onclick="handleDeletionAction('y')" class="btn btn-danger">确认删除</button>
+                                <button onclick="handleDeletionAction('n')" class="btn btn-secondary">取消</button>
+                                <button onclick="handleDeletionAction('l')" class="btn btn-info">清除标记</button>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-{{ category }} floating-alert {% if category == 'success' or message == '测试完成！' or message == '背诵完成！' %}auto-dismiss{% endif %}">{{ message }}</div>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -52,30 +65,82 @@
     {% block scripts %}{% endblock %}
     
     <script>
-        // 处理自动消失的消息
-    document.addEventListener('DOMContentLoaded', function() {
 
-
-    // 检查是否有删除提示，添加Y/N键监听
-    const deletionPrompt = document.querySelector('.deletion-prompt');
-    if (deletionPrompt) {
-        document.addEventListener('keydown', function(event) {
-            // Y键 - 确认删除
-            if (event.key.toLowerCase() === 'y') {
-                event.preventDefault();
-                // 从提示中获取组ID
-                const groupId = deletionPrompt.dataset.groupId;
-                window.location.href = `/practice/delete_marked_words/${groupId}`;
-            }
-            // N键 - 取消删除
-            else if (event.key.toLowerCase() === 'n') {
-                event.preventDefault();
-                deletionPrompt.remove();
-                showTemporaryMessage('已取消删除操作');
-            }
-        });
+    function handleDeletionAction(action) {
+        const deletionPrompt = document.querySelector('.deletion-prompt');
+        if (!deletionPrompt) return;
+        
+        const groupId = deletionPrompt.dataset.groupId;
+        console.log(`执行操作: ${action}, 组ID: ${groupId}`);
+        
+        if (action === 'y') {
+            // 创建POST表单
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/practice/delete_marked_words/${groupId}`;
+            document.body.appendChild(form);
+            form.submit();
+        } 
+        else if (action === 'n') {
+            deletionPrompt.remove();
+            showMessage('已取消删除操作');
+        }
+        else if (action === 'l') {
+            // 创建POST表单
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/practice/clear_deletion_marks/${groupId}`;
+            document.body.appendChild(form);
+            form.submit();
+        }
     }
-    
+
+    // 全局键盘监听
+    document.addEventListener('keydown', function(event) {
+        const deletionPrompt = document.querySelector('.deletion-prompt');
+        if (!deletionPrompt) return;
+        
+        if (event.key.toLowerCase() === 'y') {
+            event.preventDefault();
+            handleDeletionAction('y');
+        }
+        else if (event.key.toLowerCase() === 'n') {
+            event.preventDefault();
+            handleDeletionAction('n');
+        }
+        else if (event.key.toLowerCase() === 'l') {
+            event.preventDefault();
+            handleDeletionAction('l');
+        }
+    });
+
+    function showMessage(message) {
+        const notification = document.createElement('div');
+        notification.className = 'floating-notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // 处理自动消失的消息
+    document.addEventListener('DOMContentLoaded', function() {    
     function showTemporaryMessage(message) {
         const notification = document.createElement('div');
         notification.className = 'floating-notification';
@@ -87,14 +152,10 @@
             setTimeout(() => notification.remove(), 300);
         }, 2000);
     }
-});
 
 
-
-
-
-            
-            const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
+          
+    const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
             autoDismissAlerts.forEach(function(alert) {
                 setTimeout(function() {
                     alert.classList.add('fade-out');
@@ -144,7 +205,56 @@
                     });
                 });
             });
+
+
+
+    // 检查是否有删除提示，添加Y/N/L键监听
+    const deletionPrompt = document.querySelector('.deletion-prompt');
+    if (deletionPrompt) {
+        document.addEventListener('keydown', function(event) {
+            // Y键 - 确认删除
+            if (event.key.toLowerCase() === 'y') {
+                event.preventDefault();
+                // 从提示中获取组ID
+                const groupId = deletionPrompt.dataset.groupId;
+                // 使用POST请求
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/practice/delete_marked_words/${groupId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+            // N键 - 取消
+            else if (event.key.toLowerCase() === 'n') {
+                event.preventDefault();
+                deletionPrompt.remove();
+                showTemporaryMessage('已取消删除操作');
+            }
+            // L键 - 清除所有删除标记
+            else if (event.key.toLowerCase() === 'l') {
+                event.preventDefault();
+                // 从提示中获取组ID
+                const groupId = deletionPrompt.dataset.groupId;
+                // 使用POST请求
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/practice/clear_deletion_marks/${groupId}`;
+                document.body.appendChild(form);
+                form.submit();
+            }
         });
+    }
+
+
+
+
+
+
+
+
+        });
+
+
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -177,7 +287,6 @@
             }, 60000); // 每分钟检查一次
         }
         
-        // 现有代码...
     });
 
 

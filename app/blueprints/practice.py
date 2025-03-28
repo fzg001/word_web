@@ -3,6 +3,11 @@ from app.models import WordGroup, Word, GroupStats
 from app import db
 import random
 
+
+
+
+
+
 practice_bp = Blueprint('practice', __name__)
 def get_practice_words(group, mode):
     """获取练习单词列表"""
@@ -76,7 +81,6 @@ def study_mode(group_id):
                          total_words=words.total,
                          is_last_word=is_last_word)
 
-
 @practice_bp.route('/complete_study/<int:group_id>')
 def complete_study(group_id):
     """完成背诵，增加背诵次数"""
@@ -91,15 +95,12 @@ def complete_study(group_id):
         group.stats.study_count += 1
         session[complete_key] = True
         db.session.commit()
-        print(f"完成背诵组别: {group_id}, 当前背诵次数: {group.stats.study_count}")
         
         # 检查是否有标记为删除的单词
-        deletion_key = f'delete_words_{group_id}'
-        deletion_count = len(session.get(deletion_key, []))
+        deletion_count = Word.query.filter_by(group_id=group_id, deletion_mark=True).count()
         
         if deletion_count > 0:
-            flash(f'背诵完成！共有{deletion_count}个单词被标记为待删除。如果需要删除请按Y，否则按N', 'warning')
-            session['show_deletion_prompt'] = True
+            flash(f'背诵完成！共有{deletion_count}个单词被标记为待删除。如果需要删除请按Y，否则按N，按L清除所有删除标记[deletion-prompt]', 'warning')
             session['deletion_group_id'] = group_id
         else:
             flash('背诵完成！', 'success')
@@ -341,71 +342,80 @@ def mark_for_deletion():
     """标记单词为待删除"""
     data = request.json
     word_id = data.get('word_id')
-    group_id = data.get('group_id')
     
-    if not word_id or not group_id:
-        return jsonify({'success': False, 'message': '参数不完整'})
+    if not word_id:
+        return jsonify({'success': False, 'message': '未提供单词ID'})
     
-    # 使用会话存储待删除的单词
-    deletion_key = f'delete_words_{group_id}'
-    to_delete = session.get(deletion_key, [])
+    word = Word.query.get(word_id)
+    if not word:
+        return jsonify({'success': False, 'message': '单词不存在'})
     
-    if word_id in to_delete:
-        to_delete.remove(word_id)
-        message = '已取消删除标记'
-    else:
-        to_delete.append(word_id)
-        message = '已标记为待删除'
-    
-    session[deletion_key] = to_delete
+    # 切换删除标记状态
+    word.deletion_mark = not word.deletion_mark
+    db.session.commit()
     
     return jsonify({
         'success': True, 
-        'marked': word_id in to_delete,
-        'message': message,
-        'delete_count': len(to_delete)
+        'marked': word.deletion_mark,
+        'message': '已标记为待删除' if word.deletion_mark else '已取消删除标记'
     })
 
 @practice_bp.route('/delete_marked_words/<int:group_id>', methods=['POST'])
 def delete_marked_words(group_id):
     """执行删除标记的单词"""
-    deletion_key = f'delete_words_{group_id}'
-    to_delete = session.get(deletion_key, [])
+    # 查找该组中标记为删除的单词
+    words_to_delete = Word.query.filter_by(group_id=group_id, deletion_mark=True).all()
     
-    if not to_delete:
+    if not words_to_delete:
         flash('没有需要删除的单词', 'info')
         return redirect(url_for('main.index'))
     
     # 执行删除
     delete_count = 0
-    for word_id in to_delete:
-        word = Word.query.get(word_id)
-        if word and word.group_id == group_id:
-            db.session.delete(word)
-            delete_count += 1
+    for word in words_to_delete:
+        db.session.delete(word)
+        delete_count += 1
     
     db.session.commit()
     
-    # 清除会话中的删除标记
-    session.pop(deletion_key, None)
-    
     flash(f'已删除 {delete_count} 个单词', 'success')
     return redirect(url_for('main.index'))
-
 
 @practice_bp.route('/check_deletion_status')
 def check_deletion_status():
     """检查单词是否标记为删除"""
     word_id = request.args.get('word_id')
-    group_id = request.args.get('group_id')
     
-    if not word_id or not group_id:
+    if not word_id:
         return jsonify({'success': False, 'message': '参数不完整'})
     
-    deletion_key = f'delete_words_{group_id}'
-    to_delete = session.get(deletion_key, [])
+    word = Word.query.get(word_id)
+    if not word:
+        return jsonify({'success': False, 'message': '单词不存在'})
     
     return jsonify({
         'success': True,
-        'marked': word_id in to_delete
+        'marked': word.deletion_mark
     })
+
+
+@practice_bp.route('/clear_deletion_marks/<int:group_id>', methods=['POST'])
+def clear_deletion_marks(group_id):
+    """清除所有删除标记"""
+    # 查找该组中标记为删除的单词
+    words_marked = Word.query.filter_by(group_id=group_id, deletion_mark=True).all()
+    
+    if not words_marked:
+        flash('没有标记需要清除', 'info')
+        return redirect(url_for('main.index'))
+    
+    # 清除标记
+    mark_count = 0
+    for word in words_marked:
+        word.deletion_mark = False
+        mark_count += 1
+    
+    db.session.commit()
+    
+    flash(f'已清除 {mark_count} 个删除标记', 'success')
+    return redirect(url_for('main.index'))

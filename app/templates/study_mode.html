@@ -71,13 +71,19 @@
         
         // 检查单词是否已标记为删除
         checkDeletionStatus();
-        
+    
+
         async function checkDeletionStatus() {
             try {
-                const response = await fetch(`/practice/check_deletion_status?word_id=${currentWordId}&group_id=${groupId}`);
+                const response = await fetch(`/practice/check_deletion_status?word_id=${currentWordId}`);
                 const data = await response.json();
-                markedForDeletion = data.marked;
-                updateCardUI();
+                
+                if (data.success) {
+                    markedForDeletion = data.marked;
+                    updateCardUI();
+                } else {
+                    console.error("删除状态检查失败:", data.message);
+                }
             } catch (error) {
                 console.error('检查删除状态时出错:', error);
             }
@@ -136,8 +142,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ 
-                        word_id: currentWordId,
-                        group_id: groupId
+                        word_id: currentWordId
                     })
                 });
                 
