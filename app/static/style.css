@@ -1978,22 +1978,7 @@ nav a:hover::after {
 }
 
 
-/* 删除确认按钮区域 */
-.deletion-actions {
-    /* 使用与普通通知相同的基础样式 */
-    /* 不要居中 */
-}
 
-.deletion-actions .action-buttons {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.deletion-actions .btn-sm {
-    padding: 3px 8px;
-    font-size: 0.85rem;
-}
 
 /* 确保所有通知使用统一的风格 */
 .floating-alert {
@@ -2105,4 +2090,23 @@ nav a.active {
         width: 100%;
         justify-content: center;
     }
+}
+
+/* 统一使用 .deletion-prompt 类名 */
+.deletion-prompt {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    left: auto;
+    transform: none;
+    background: var(--card-bg, white);
+    color: var(--text-color, #333);
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    z-index: 1100;
+    max-width: 350px;
+    text-align: left;
+    border-left: 4px solid #dc3545;
+    animation: slide-in-right 0.3s ease-out;
 }

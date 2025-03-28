@@ -44,7 +44,7 @@
             {% if messages %}
                 {% for category, message in messages %}
                     {% if '[deletion-prompt]' in message %}
-                        <div class="alert alert-{{ category }} floating-alert deletion-actions" data-group-id="{{ session.get('deletion_group_id', '') }}">
+                        <div class="alert alert-{{ category }} floating-alert deletion-prompt" data-group-id="{{ session.get('deletion_group_id', '') }}">
                             {{ message|replace('[deletion-prompt]', '') }}
                             <!-- 添加实际按钮 -->
                             <div class="deletion-buttons">
@@ -63,11 +63,38 @@
     
     {% block scripts %}{% endblock %}
     
-    <script>
 
-    function handleDeletionAction(action) {
+
+<script>
+// 当DOM加载完成后执行
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM已加载，初始化事件处理");
+    
+    // 处理自动消失的消息
+    const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
+    autoDismissAlerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.classList.add('fade-out');
+            setTimeout(function() {
+                alert.remove();
+            }, 300);
+        }, 3000);
+    });
+    
+    // 检查是否有删除提示弹窗
+    const checkForDeletionPrompt = function() {
         const deletionPrompt = document.querySelector('.deletion-prompt');
-        if (!deletionPrompt) return;
+        console.log("检查删除提示弹窗:", deletionPrompt ? "存在" : "不存在");
+        return deletionPrompt;
+    };
+    
+    // 删除提示操作处理函数
+    window.handleDeletionAction = function(action) {
+        const deletionPrompt = checkForDeletionPrompt();
+        if (!deletionPrompt) {
+            console.log("未找到删除提示弹窗，无法执行操作");
+            return;
+        }
         
         const groupId = deletionPrompt.dataset.groupId;
         console.log(`执行操作: ${action}, 组ID: ${groupId}`);
@@ -92,28 +119,11 @@
             document.body.appendChild(form);
             form.submit();
         }
-    }
-
-    // 全局键盘监听
-    document.addEventListener('keydown', function(event) {
-        const deletionPrompt = document.querySelector('.deletion-prompt');
-        if (!deletionPrompt) return;
-        
-        if (event.key.toLowerCase() === 'y') {
-            event.preventDefault();
-            handleDeletionAction('y');
-        }
-        else if (event.key.toLowerCase() === 'n') {
-            event.preventDefault();
-            handleDeletionAction('n');
-        }
-        else if (event.key.toLowerCase() === 'l') {
-            event.preventDefault();
-            handleDeletionAction('l');
-        }
-    });
-
-    function showMessage(message, category = 'info') {
+    };
+    
+    // 全局消息显示函数
+    window.showMessage = function(message, category = 'info') {
+        console.log(`显示消息: ${message}, 类别: ${category}`);
         // 创建与系统通知相同风格的通知
         const notification = document.createElement('div');
         notification.className = `alert alert-${category} floating-alert auto-dismiss`;
@@ -128,183 +138,106 @@
             notification.classList.add('fade-out');
             setTimeout(() => notification.remove(), 300);
         }, 3000);
-    }
-
-
-
-
-
-
-
-
-
-
-
-        // 处理自动消失的消息
-    document.addEventListener('DOMContentLoaded', function() {    
-    function showTemporaryMessage(message) {
-        showMessage(message, 'info');
-    }
-
-
-          
-    const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
-            autoDismissAlerts.forEach(function(alert) {
-                setTimeout(function() {
-                    alert.classList.add('fade-out');
-                    setTimeout(function() {
-                        alert.remove();
-                    }, 300); // 淡出动画结束后移除元素
-                }, 3000); // 3秒后开始淡出
-            });
-
-            // 自定义表单验证
-            const forms = document.querySelectorAll('form');
-            forms.forEach(form => {
-                form.setAttribute('novalidate', '');
-                form.addEventListener('submit', function(event) {
-                    let hasError = false;
-                    const requiredInputs = form.querySelectorAll('[required]');
-                    
-                    // 移除所有现有错误提示
-                    const existingErrors = form.querySelectorAll('.input-error-bubble');
-                    existingErrors.forEach(error => error.remove());
-                    
-                    requiredInputs.forEach(input => {
-                        if (!input.value.trim()) {
-                            event.preventDefault();
-                            hasError = true;
-                            
-                            // 创建并添加错误气泡
-                            const errorBubble = document.createElement('div');
-                            errorBubble.className = 'input-error-bubble';
-                            errorBubble.textContent = '请填写此字段';
-                            
-                            // 查找父元素添加气泡
-                            const formGroup = input.closest('.form-group') || input.parentNode;
-                            formGroup.appendChild(errorBubble);
-                            
-                            // 聚焦到第一个错误输入
-                            if (hasError === true) {
-                                input.focus();
-                            }
-                            
-                            // 3秒后移除气泡
-                            setTimeout(() => {
-                                errorBubble.classList.add('fade-out');
-                                setTimeout(() => errorBubble.remove(), 300);
-                            }, 3000);
-                        }
-                    });
-                });
-            });
-
-
-
-    // 检查是否有删除提示，添加Y/N/L键监听
-    const deletionPrompt = document.querySelector('.deletion-prompt');
-    if (deletionPrompt) {
-        document.addEventListener('keydown', function(event) {
-            // Y键 - 确认删除
+    };
+    
+    // 全局键盘事件监听
+    document.addEventListener('keydown', function(event) {
+        console.log(`键盘按下: ${event.key}`);
+        const deletionPrompt = checkForDeletionPrompt();
+        
+        if (deletionPrompt) {
             if (event.key.toLowerCase() === 'y') {
+                console.log("Y键被按下 - 执行删除操作");
                 event.preventDefault();
-                // 从提示中获取组ID
-                const groupId = deletionPrompt.dataset.groupId;
-                // 使用POST请求
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/practice/delete_marked_words/${groupId}`;
-                document.body.appendChild(form);
-                form.submit();
+                handleDeletionAction('y');
+                return;
             }
-            // N键 - 取消
             else if (event.key.toLowerCase() === 'n') {
+                console.log("N键被按下 - 执行取消操作");
                 event.preventDefault();
-                deletionPrompt.remove();
-                showTemporaryMessage('已取消删除操作');
+                handleDeletionAction('n');
+                return;
             }
-            // L键 - 清除所有删除标记
             else if (event.key.toLowerCase() === 'l') {
+                console.log("L键被按下 - 执行清除标记操作");
                 event.preventDefault();
-                // 从提示中获取组ID
-                const groupId = deletionPrompt.dataset.groupId;
-                // 使用POST请求
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/practice/clear_deletion_marks/${groupId}`;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-    }
-
-
-
-
-
-
-
-
-        });
-
-
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-        // 应用主题
-        const savedTheme = localStorage.getItem('wordweb_theme') || 'light';
-        
-        // 应用主题到body
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-theme');
-        } else if (savedTheme === 'auto') {
-            // 根据时间自动应用
-            const currentHour = new Date().getHours();
-            if (currentHour >= 18 || currentHour < 6) {
-                document.body.classList.add('dark-theme');
+                handleDeletionAction('l');
+                return;
             }
         }
-        
-        // 自动主题的定时检查
-        if (savedTheme === 'auto') {
-            setInterval(function() {
-                const currentHour = new Date().getHours();
-                const isDarkTime = currentHour >= 18 || currentHour < 6;
-                const hasDarkClass = document.body.classList.contains('dark-theme');
-                
-                if (isDarkTime && !hasDarkClass) {
-                    document.body.classList.add('dark-theme');
-                } else if (!isDarkTime && hasDarkClass) {
-                    document.body.classList.remove('dark-theme');
-                }
-            }, 60000); // 每分钟检查一次
-        }
-        
     });
-
-
-// 在脚本部分添加
-function showMessage(message, category = 'info') {
-    // 创建与系统通知相同风格的通知
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${category} floating-alert auto-dismiss`;
-    notification.textContent = message;
     
-    // 添加到通知区域
-    const alertsContainer = document.querySelector('.floating-alerts');
-    alertsContainer.appendChild(notification);
+    // 表单验证
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.setAttribute('novalidate', '');
+        form.addEventListener('submit', function(event) {
+            let hasError = false;
+            const requiredInputs = form.querySelectorAll('[required]');
+            
+            // 移除所有现有错误提示
+            const existingErrors = form.querySelectorAll('.input-error-bubble');
+            existingErrors.forEach(error => error.remove());
+            
+            requiredInputs.forEach(input => {
+                if (!input.value.trim()) {
+                    event.preventDefault();
+                    hasError = true;
+                    
+                    // 创建并添加错误气泡
+                    const errorBubble = document.createElement('div');
+                    errorBubble.className = 'input-error-bubble';
+                    errorBubble.textContent = '请填写此字段';
+                    
+                    // 查找父元素添加气泡
+                    const formGroup = input.closest('.form-group') || input.parentNode;
+                    formGroup.appendChild(errorBubble);
+                    
+                    // 聚焦到第一个错误输入
+                    if (hasError === true) {
+                        input.focus();
+                    }
+                    
+                    // 3秒后移除气泡
+                    setTimeout(() => {
+                        errorBubble.classList.add('fade-out');
+                        setTimeout(() => errorBubble.remove(), 300);
+                    }, 3000);
+                }
+            });
+        });
+    });
     
-    // 设置自动消失
-    setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
+    // 应用主题
+    const savedTheme = localStorage.getItem('wordweb_theme') || 'light';
+    
+    // 应用主题到body
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else if (savedTheme === 'auto') {
+        // 根据时间自动应用
+        const currentHour = new Date().getHours();
+        if (currentHour >= 18 || currentHour < 6) {
+            document.body.classList.add('dark-theme');
+        }
+    }
+    
+    // 自动主题的定时检查
+    if (savedTheme === 'auto') {
+        setInterval(function() {
+            const currentHour = new Date().getHours();
+            const isDarkTime = currentHour >= 18 || currentHour < 6;
+            const hasDarkClass = document.body.classList.contains('dark-theme');
+            
+            if (isDarkTime && !hasDarkClass) {
+                document.body.classList.add('dark-theme');
+            } else if (!isDarkTime && hasDarkClass) {
+                document.body.classList.remove('dark-theme');
+            }
+        }, 60000); // 每分钟检查一次
+    }
+});
+</script>
 
-
-
-
-
-    </script>
 </body>
 </html>
