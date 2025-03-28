@@ -1299,6 +1299,8 @@ nav a:hover::after {
     transform: rotateY(180deg);
 }
 
+ 
+
 .compact-view .card-front,
 .compact-view .card-back {
     position: absolute;
@@ -1320,33 +1322,63 @@ nav a:hover::after {
 
 /* 紧凑视图卡片背面按钮 */
 .compact-view .back-btn {
-    width: 100%;
+    width: 80%; /* 减小宽度，避免超出边界 */
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    color: rgba(0, 0, 0, 0.8);
+    transition: all 0.3s ease;
     padding: 6px 0;
     font-size: 0.8rem;
     text-align: center;
     border-radius: 4px;
     transition: all 0.2s ease;
     text-decoration: none;
-    color: white;
     font-weight: 500;
+    margin: 4px 0; /* 按钮之间增加间距 */
 }
 
+
+
+
+/* 背诵模式按钮 */
 .compact-view .back-btn.study {
-    background: linear-gradient(135deg, #4285f4, #5e97f6);
+    border-left: 3px solid #4285f4;
+    box-shadow: 0 4px 10px rgba(66, 133, 244, 0.15);
 }
 
-.compact-view .back-btn.order {
-    background: linear-gradient(135deg, #fbbc05, #ffd666);
-}
-
-.compact-view .back-btn.random {
-    background: linear-gradient(135deg, #34a853, #41c464);
-}
-
-.compact-view .back-btn:hover {
+.compact-view .back-btn.study:hover {
+    background: rgba(66, 133, 244, 0.15);
+    box-shadow: 0 6px 12px rgba(66, 133, 244, 0.2);
     transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
 }
+
+/* 顺序测试按钮 */
+.compact-view .back-btn.order {
+    border-left: 3px solid #fbbc05;
+    box-shadow: 0 4px 10px rgba(251, 188, 5, 0.15);
+}
+
+.compact-view .back-btn.order:hover {
+    background: rgba(251, 188, 5, 0.15);
+    box-shadow: 0 6px 12px rgba(251, 188, 5, 0.2);
+    transform: translateY(-2px);
+}
+
+/* 乱序测试按钮 */
+.compact-view .back-btn.random {
+    border-left: 3px solid #34a853;
+    box-shadow: 0 4px 10px rgba(52, 168, 83, 0.15);
+}
+
+.compact-view .back-btn.random:hover {
+    background: rgba(52, 168, 83, 0.15);
+    box-shadow: 0 6px 12px rgba(52, 168, 83, 0.2);
+    transform: translateY(-2px);
+}
+
 
 /* 保持卡片级别样式 */
 .compact-view .diamond-card {
@@ -1438,19 +1470,7 @@ nav a:hover::after {
     z-index: 2;
 }
 
-/* 紧凑视图卡片背面按钮改进 */
-.compact-view .back-btn {
-    width: 80%; /* 减小宽度，避免超出边界 */
-    padding: 6px 0;
-    font-size: 0.8rem;
-    text-align: center;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    margin: 4px 0; /* 按钮之间增加间距 */
-}
+
 
 /* 确保卡片内容居中 */
 .compact-view .card-inner {
@@ -1670,3 +1690,142 @@ nav a:hover::after {
     padding-bottom: 10px; /* 保持与其他按钮一致的底部间距 */
 }
 
+
+/* 修复紧凑视图下卡片选中效果 */
+.compact-view .group-card.card-selected,
+.compact-view .sortable-card.card-selected {
+    box-shadow: 0 0 0 3px #4285f4, 0 6px 20px rgba(66, 133, 244, 0.4) !important;
+    transform: scale(1.05) !important;
+    z-index: 100 !important;
+    border-color: #4285f4 !important;
+}
+
+/* 确保选中效果在翻转时也保持 */
+.compact-view .card-selected .card-inner {
+    box-shadow: none !important; /* 防止卡片内部叠加阴影 */
+}
+
+/* 强化选中状态的视觉效果 */
+.compact-view .card-selected::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 14px; /* 略大于卡片边框半径 */
+    border: 3px solid #4285f4;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* 大卡片的选中效果 - 与紧凑视图保持一致 */
+.group-card.card-selected,
+.sortable-card.card-selected {
+    box-shadow: 0 0 0 3px #4285f4, 0 6px 20px rgba(66, 133, 244, 0.4) !important;
+    transform: scale(1.05) !important;
+    z-index: 100 !important;
+    border-color: #4285f4 !important;
+}
+
+/* 确保选中效果在卡片内部统一 */
+.card-selected .card-inner {
+    box-shadow: none !important; /* 防止卡片内部叠加阴影 */
+}
+
+/* 统一的选中状态视觉效果 - 适用于所有卡片 */
+.group-card.card-selected::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 14px; /* 略大于卡片边框半径 */
+    border: 3px solid #4285f4;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* 禁用排序模式下（排序模式 class 是 .sorting-mode）紧凑视图卡片的翻转 */
+.sorting-mode .compact-view .group-card .card-inner,
+.sorting-mode .compact-view .group-card:hover .card-inner {
+    transform: none !important;
+    transition: none !important;
+}
+/* 排序模式下确保卡片背面完全不可见 */
+.sorting-mode .card-back {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* 排序模式下确保卡片正面始终可见 */
+.sorting-mode .compact-view .card-front {
+    backface-visibility: visible !important;
+    transform: none !important;
+    position: relative !important;
+    display: flex !important;
+}
+
+
+
+/* 修复紧凑视图下卡片选中效果 */
+.compact-view .group-card.card-selected,
+.compact-view .sortable-card.card-selected {
+    box-shadow: 0 0 0 3px #4285f4, 0 6px 20px rgba(66, 133, 244, 0.4) !important;
+    transform: scale(1.05) !important;
+    z-index: 100 !important;
+    border-color: #4285f4 !important;
+}
+
+/* 确保选中效果在翻转时也保持 */
+.compact-view .card-selected .card-inner {
+    box-shadow: none !important; /* 防止卡片内部叠加阴影 */
+}
+
+/* 强化选中状态的视觉效果 */
+.compact-view .card-selected::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 14px; /* 略大于卡片边框半径 */
+    border: 3px solid #4285f4;
+    pointer-events: none;
+    z-index: 5;
+}
+
+
+
+
+/* 大卡片的选中效果 - 与紧凑视图保持一致 */
+.group-card.card-selected,
+.sortable-card.card-selected {
+    box-shadow: 0 0 0 3px #4285f4, 0 6px 20px rgba(66, 133, 244, 0.4) !important;
+    transform: scale(1.05) !important;
+    z-index: 100 !important;
+    border-color: #4285f4 !important;
+}
+
+/* 确保选中效果在卡片内部统一 */
+.card-selected .card-inner {
+    box-shadow: none !important; /* 防止卡片内部叠加阴影 */
+}
+
+/* 统一的选中状态视觉效果 - 适用于所有卡片 */
+.group-card.card-selected::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 14px; /* 略大于卡片边框半径 */
+    border: 3px solid #4285f4;
+    pointer-events: none;
+    z-index: 5;
+}
