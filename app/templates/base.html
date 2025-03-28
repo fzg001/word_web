@@ -44,14 +44,13 @@
             {% if messages %}
                 {% for category, message in messages %}
                     {% if '[deletion-prompt]' in message %}
-                        <div class="alert alert-{{ category }} floating-alert deletion-prompt" data-group-id="{{ session.get('deletion_group_id', '') }}">
+                        <div class="alert alert-{{ category }} floating-alert deletion-actions" data-group-id="{{ session.get('deletion_group_id', '') }}">
                             {{ message|replace('[deletion-prompt]', '') }}
-
                             <!-- 添加实际按钮 -->
                             <div class="deletion-buttons">
+                                <button onclick="handleDeletionAction('l')" class="btn btn-outline">清除标记</button>
+                                <button onclick="handleDeletionAction('n')" class="btn btn-outline">取消</button>
                                 <button onclick="handleDeletionAction('y')" class="btn btn-danger">确认删除</button>
-                                <button onclick="handleDeletionAction('n')" class="btn btn-secondary">取消</button>
-                                <button onclick="handleDeletionAction('l')" class="btn btn-info">清除标记</button>
                             </div>
                         </div>
                     {% else %}
@@ -83,7 +82,7 @@
         } 
         else if (action === 'n') {
             deletionPrompt.remove();
-            showMessage('已取消删除操作');
+            showMessage('已取消删除操作', 'info');
         }
         else if (action === 'l') {
             // 创建POST表单
@@ -114,20 +113,22 @@
         }
     });
 
-    function showMessage(message) {
+    function showMessage(message, category = 'info') {
+        // 创建与系统通知相同风格的通知
         const notification = document.createElement('div');
-        notification.className = 'floating-notification';
+        notification.className = `alert alert-${category} floating-alert auto-dismiss`;
         notification.textContent = message;
-        document.body.appendChild(notification);
         
+        // 添加到通知区域
+        const alertsContainer = document.querySelector('.floating-alerts');
+        alertsContainer.appendChild(notification);
+        
+        // 设置自动消失
         setTimeout(() => {
             notification.classList.add('fade-out');
             setTimeout(() => notification.remove(), 300);
-        }, 2000);
+        }, 3000);
     }
-
-
-
 
 
 
@@ -142,15 +143,7 @@
         // 处理自动消失的消息
     document.addEventListener('DOMContentLoaded', function() {    
     function showTemporaryMessage(message) {
-        const notification = document.createElement('div');
-        notification.className = 'floating-notification';
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
+        showMessage(message, 'info');
     }
 
 
@@ -290,7 +283,23 @@
     });
 
 
-
+// 在脚本部分添加
+function showMessage(message, category = 'info') {
+    // 创建与系统通知相同风格的通知
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${category} floating-alert auto-dismiss`;
+    notification.textContent = message;
+    
+    // 添加到通知区域
+    const alertsContainer = document.querySelector('.floating-alerts');
+    alertsContainer.appendChild(notification);
+    
+    // 设置自动消失
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
 
 
 

@@ -122,7 +122,7 @@
                 
                 if (data.success) {
                     isMarked = data.marked;
-                    showNotification(data.message);
+                    showNotification(data.message, isMarked ? 'success' : 'info');
                     updateCardUI();
                 } else {
                     showNotification('操作失败: ' + data.message);
@@ -150,7 +150,7 @@
                 
                 if (data.success) {
                     markedForDeletion = data.marked;
-                    showNotification(data.message);
+                    showNotification(data.message, markedForDeletion ? 'warning' : 'info');
                     updateCardUI();
                 } else {
                     showNotification('操作失败: ' + data.message);
@@ -162,16 +162,29 @@
         }
         
         // 显示通知
-        function showNotification(message) {
+        function showNotification(message, category = 'info') {
+            // 创建与系统flash相同风格的通知
             const notification = document.createElement('div');
-            notification.className = 'floating-notification';
+            notification.className = `alert alert-${category} floating-alert auto-dismiss`;
             notification.textContent = message;
-            document.body.appendChild(notification);
             
+            // 添加到通知区域
+            const alertsContainer = document.querySelector('.floating-alerts');
+            if (alertsContainer) {
+                alertsContainer.appendChild(notification);
+            } else {
+                // 如果找不到容器，创建一个临时容器
+                const tempContainer = document.createElement('div');
+                tempContainer.className = 'floating-alerts';
+                tempContainer.appendChild(notification);
+                document.body.appendChild(tempContainer);
+            }
+            
+            // 设置自动消失
             setTimeout(() => {
                 notification.classList.add('fade-out');
                 setTimeout(() => notification.remove(), 300);
-            }, 2000);
+            }, 3000);
         }
         
         // 监听键盘事件
