@@ -53,7 +53,47 @@
     
     <script>
         // 处理自动消失的消息
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+
+
+    // 检查是否有删除提示，添加Y/N键监听
+    const deletionPrompt = document.querySelector('.deletion-prompt');
+    if (deletionPrompt) {
+        document.addEventListener('keydown', function(event) {
+            // Y键 - 确认删除
+            if (event.key.toLowerCase() === 'y') {
+                event.preventDefault();
+                // 从提示中获取组ID
+                const groupId = deletionPrompt.dataset.groupId;
+                window.location.href = `/practice/delete_marked_words/${groupId}`;
+            }
+            // N键 - 取消删除
+            else if (event.key.toLowerCase() === 'n') {
+                event.preventDefault();
+                deletionPrompt.remove();
+                showTemporaryMessage('已取消删除操作');
+            }
+        });
+    }
+    
+    function showTemporaryMessage(message) {
+        const notification = document.createElement('div');
+        notification.className = 'floating-notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
+    }
+});
+
+
+
+
+
+            
             const autoDismissAlerts = document.querySelectorAll('.auto-dismiss');
             autoDismissAlerts.forEach(function(alert) {
                 setTimeout(function() {

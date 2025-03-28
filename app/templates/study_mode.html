@@ -16,7 +16,7 @@
         </div>
     </div>
     
-    <p class="keyboard-hint">提示：可使用 ← → 方向键快速导航</p>
+    <p class="keyboard-hint">提示：可使用键盘 A和D 快速导航  使用W标记单词 使用S 删除单词</p>
 </div>
 
 <div class="study-card">
@@ -30,19 +30,23 @@
     <div class="nav-left">
         {% if current_index > 1 %}
             <a href="?page={{ current_index - 1 }}" class="btn btn-primary" id="prev-btn">
-                <i class="nav-icon">←</i> 上一个
+                <i class="nav-icon"></i> 上一个
             </a>
         {% else %}
             <span class="btn disabled">
-                <i class="nav-icon">←</i> 上一个
+                <i class="nav-icon"></i> 上一个
             </span>
         {% endif %}
     </div>
-    
+
+
+
+
+
     <div class="nav-right">
         {% if current_index < total_words %}
             <a href="?page={{ current_index + 1 }}" class="btn btn-primary" id="next-btn">
-                下一个 <i class="nav-icon">→</i>
+                下一个 <i class="nav-icon"></i>
             </a>
         {% else %}
             <a href="{{ url_for('practice.complete_study', group_id=group.id) }}" class="btn btn-success" id="complete-btn">完成背诵</a>
@@ -50,13 +54,120 @@
     </div>
 </div>
 
-{% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // 获取导航按钮
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const completeBtn = document.getElementById('complete-btn');
+        
+        // 获取当前单词ID和组ID
+        const currentWordId = {{ word.id }};
+        const groupId = {{ group.id }};
+        
+        // 记录标记状态
+        let isMarked = {{ 'true' if word.marked else 'false' }};
+        let markedForDeletion = false;
+        
+        // 检查单词是否已标记为删除
+        checkDeletionStatus();
+        
+        async function checkDeletionStatus() {
+            try {
+                const response = await fetch(`/practice/check_deletion_status?word_id=${currentWordId}&group_id=${groupId}`);
+                const data = await response.json();
+                markedForDeletion = data.marked;
+                updateCardUI();
+            } catch (error) {
+                console.error('检查删除状态时出错:', error);
+            }
+        }
+        
+        function updateCardUI() {
+            const studyCard = document.querySelector('.study-card');
+            
+            // 更新标记状态
+            if (isMarked) {
+                studyCard.classList.add('word-marked');
+            } else {
+                studyCard.classList.remove('word-marked');
+            }
+            
+            // 更新删除标记状态
+            if (markedForDeletion) {
+                studyCard.classList.add('deletion-marked');
+            } else {
+                studyCard.classList.remove('deletion-marked');
+            }
+        }
+        
+        // 标记/取消标记单词
+        async function toggleWordMark() {
+            try {
+                const response = await fetch('/practice/toggle_mark_word', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ word_id: currentWordId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    isMarked = data.marked;
+                    showNotification(data.message);
+                    updateCardUI();
+                } else {
+                    showNotification('操作失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('标记单词时出错:', error);
+                showNotification('操作失败，请重试');
+            }
+        }
+        
+        // 标记/取消标记为待删除
+        async function toggleDeletionMark() {
+            try {
+                const response = await fetch('/practice/mark_for_deletion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        word_id: currentWordId,
+                        group_id: groupId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    markedForDeletion = data.marked;
+                    showNotification(data.message);
+                    updateCardUI();
+                } else {
+                    showNotification('操作失败: ' + data.message);
+                }
+            } catch (error) {
+                console.error('标记删除时出错:', error);
+                showNotification('操作失败，请重试');
+            }
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'floating-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
         
         // 监听键盘事件
         document.addEventListener('keydown', function(event) {
@@ -80,9 +191,52 @@
                     completeBtn.click();
                 }
             }
+
+
+            //a键 - 上一个单词
+            else if (event.key.toLowerCase() === 'a' && prevBtn) {
+                event.preventDefault();
+                prevBtn.click();
+            }
+            
+            // d键 - 下一个单词或完成
+            else if (event.key.toLowerCase() === 'd') {
+                event.preventDefault();
+                if (nextBtn) {
+                    nextBtn.click();
+                } else if (completeBtn) {
+                    completeBtn.click();
+                }
+            }
+
+            // W键 - 标记/取消标记单词
+            else if (event.key.toLowerCase() === 'w') {
+                event.preventDefault();
+                toggleWordMark();
+            }
+            // S键 - 标记/取消标记为待删除
+            else if (event.key.toLowerCase() === 's') {
+                event.preventDefault();
+                toggleDeletionMark();
+            }
+            // Y键 - 确认删除（如果有删除提示）
+            else if (event.key.toLowerCase() === 'y' && document.querySelector('.deletion-prompt')) {
+                event.preventDefault();
+                window.location.href = `/practice/delete_marked_words/${groupId}`;
+            }
+            // N键 - 取消删除（如果有删除提示）
+            else if (event.key.toLowerCase() === 'n' && document.querySelector('.deletion-prompt')) {
+                event.preventDefault();
+                document.querySelector('.deletion-prompt').remove();
+                showNotification('已取消删除操作');
+            }
         });
     });
-</script>
+    </script>
+
+
+
+{% block scripts %}
 {% endblock %}
 
 {% endblock %}

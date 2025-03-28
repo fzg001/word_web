@@ -15,7 +15,7 @@ class Word(db.Model):
     english = db.Column(db.String(100), nullable=False)
     chinese = db.Column(db.String(100), nullable=False)
     group_id = db.Column(db.Integer, db.ForeignKey('word_group.id', ondelete='CASCADE'))  # 正确 
-
+    marked = db.Column(db.Boolean, default=False)  # 标记字段，默认为0(未标记)
 class GroupStats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey('word_group.id'), unique=True)

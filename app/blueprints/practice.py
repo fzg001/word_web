@@ -77,12 +77,11 @@ def study_mode(group_id):
                          is_last_word=is_last_word)
 
 
-# 添加完成背诵的路由
 @practice_bp.route('/complete_study/<int:group_id>')
 def complete_study(group_id):
     """完成背诵，增加背诵次数"""
     group = WordGroup.query.get_or_404(group_id)
-    
+
     # 检查会话中的标记
     session_key = f'study_{group_id}_started'
     complete_key = f'study_{group_id}_complete'
@@ -93,7 +92,17 @@ def complete_study(group_id):
         session[complete_key] = True
         db.session.commit()
         print(f"完成背诵组别: {group_id}, 当前背诵次数: {group.stats.study_count}")
-        flash('背诵完成！', 'success')
+        
+        # 检查是否有标记为删除的单词
+        deletion_key = f'delete_words_{group_id}'
+        deletion_count = len(session.get(deletion_key, []))
+        
+        if deletion_count > 0:
+            flash(f'背诵完成！共有{deletion_count}个单词被标记为待删除。如果需要删除请按Y，否则按N', 'warning')
+            session['show_deletion_prompt'] = True
+            session['deletion_group_id'] = group_id
+        else:
+            flash('背诵完成！', 'success')
     
     # 清除会话标记
     if session_key in session:
@@ -101,8 +110,8 @@ def complete_study(group_id):
     if complete_key in session:
         session.pop(complete_key)
     
+    # 确保函数总是返回值
     return redirect(url_for('main.index'))
-
 
 @practice_bp.route('/quiz/<int:group_id>/<mode>', methods=['GET', 'POST'])
 def quiz_mode(group_id, mode):
@@ -301,3 +310,102 @@ def exit_quiz(group_id, mode):
             session.pop(key)
     flash('测试已退出', 'info')
     return redirect(url_for('main.index'))
+
+from flask import jsonify
+
+@practice_bp.route('/toggle_mark_word', methods=['POST'])
+def toggle_mark_word():
+    """标记/取消标记单词"""
+    data = request.json
+    word_id = data.get('word_id')
+    
+    if not word_id:
+        return jsonify({'success': False, 'message': '未提供单词ID'})
+    
+    word = Word.query.get(word_id)
+    if not word:
+        return jsonify({'success': False, 'message': '单词不存在'})
+    
+    # 切换标记状态
+    word.marked = not word.marked
+    db.session.commit()
+    
+    return jsonify({
+        'success': True, 
+        'marked': word.marked,
+        'message': '已标记单词' if word.marked else '已取消标记'
+    })
+
+@practice_bp.route('/mark_for_deletion', methods=['POST'])
+def mark_for_deletion():
+    """标记单词为待删除"""
+    data = request.json
+    word_id = data.get('word_id')
+    group_id = data.get('group_id')
+    
+    if not word_id or not group_id:
+        return jsonify({'success': False, 'message': '参数不完整'})
+    
+    # 使用会话存储待删除的单词
+    deletion_key = f'delete_words_{group_id}'
+    to_delete = session.get(deletion_key, [])
+    
+    if word_id in to_delete:
+        to_delete.remove(word_id)
+        message = '已取消删除标记'
+    else:
+        to_delete.append(word_id)
+        message = '已标记为待删除'
+    
+    session[deletion_key] = to_delete
+    
+    return jsonify({
+        'success': True, 
+        'marked': word_id in to_delete,
+        'message': message,
+        'delete_count': len(to_delete)
+    })
+
+@practice_bp.route('/delete_marked_words/<int:group_id>', methods=['POST'])
+def delete_marked_words(group_id):
+    """执行删除标记的单词"""
+    deletion_key = f'delete_words_{group_id}'
+    to_delete = session.get(deletion_key, [])
+    
+    if not to_delete:
+        flash('没有需要删除的单词', 'info')
+        return redirect(url_for('main.index'))
+    
+    # 执行删除
+    delete_count = 0
+    for word_id in to_delete:
+        word = Word.query.get(word_id)
+        if word and word.group_id == group_id:
+            db.session.delete(word)
+            delete_count += 1
+    
+    db.session.commit()
+    
+    # 清除会话中的删除标记
+    session.pop(deletion_key, None)
+    
+    flash(f'已删除 {delete_count} 个单词', 'success')
+    return redirect(url_for('main.index'))
+
+
+@practice_bp.route('/check_deletion_status')
+def check_deletion_status():
+    """检查单词是否标记为删除"""
+    word_id = request.args.get('word_id')
+    group_id = request.args.get('group_id')
+    
+    if not word_id or not group_id:
+        return jsonify({'success': False, 'message': '参数不完整'})
+    
+    deletion_key = f'delete_words_{group_id}'
+    to_delete = session.get(deletion_key, [])
+    
+    return jsonify({
+        'success': True,
+        'marked': word_id in to_delete
+    })
