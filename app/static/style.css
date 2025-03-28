@@ -2042,3 +2042,34 @@ nav a.active {
 }
 
 
+/* 确保测试完成时答案显示区域与输入框高度一致 */
+.answer-display {
+    min-height: 38px; /* 与表单控件高度相同 */
+    padding: 6px 12px; /* 与表单控件内边距相同 */
+    margin-bottom: 1rem; /* 与表单控件外边距相同 */
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    background-color: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+
+/* 暗色主题适配 */
+.dark-theme .answer-display {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #eee;
+}
+
+/* 确保完成按钮样式一致 */
+.completion-btn {
+    margin-top: 0; /* 防止额外的边距 */
+}
+
+/* 空白占位符，保持与输入框相同高度 */
+.space-placeholder {
+    min-height: 38px; /* 与表单控件高度相同 */
+    margin-bottom: 1rem; /* 与表单控件外边距相同 */
+}
