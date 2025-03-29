@@ -11,52 +11,42 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 - **测试模式**：包括顺序和乱序两种测试模式，自动计算正确率并记录在数据库中。
 - **数据验证**：在创建和编辑单词组时，对输入的单词进行格式验证，确保数据的准确性。
 
-![image-20250327235922406](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327235922406.png)
+### **新增重要特性**
 
-![image-20250327133015326](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327133015326.png)
+#### v1.1.0：AI 大模型生成单词
 
-![image-20250327133029748](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327133029748.png)
+- 在创建新单词组时，用户可以利用 AI 大模型根据指定主题生成单词列表。只需输入想要的单词主题，点击“AI 生成”按钮，系统将自动调用大模型生成相关单词，为用户节省手动输入单词的时间和精力。可在设置界面进行配置，配置完成后，请点击测试连接进行测试，测试无误后即可使用AI生成单词。
 
-##  新增重要特性
 
-### v1.1.0：AI 大模型生成单词
+#### v1.2.0：单词标记、黑曜石特殊卡片、全局聚焦搜索
 
-在创建新单词组时，用户可以利用 AI 大模型根据指定主题生成单词列表。只需输入想要的单词主题，点击“AI 生成”按钮，系统将自动调用大模型生成相关单词，为用户节省手动输入单词的时间和精力。
+- 目前背诵模式可以标记单词，按W 标记（在结束背诵后，将该单词复制到黑曜石收藏中）按S添加删除标记，在结束背诵模式的时候可以根据提示选择是否删除带有删除标记的单词。具体可以从单词卡片的边框和右上角的标签观察标记状态
 
-![image-20250327150909251](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327150909251.png)
+- 筛选栏新增特殊卡片，黑曜石为其中之一的特殊卡片，可以把所有在背诵模式标记的单词自动收入黑曜石收藏中。
 
-可在设置界面进行配置，配置完成后，请点击测试连接进行测试，测试无误后即可使用AI生成单词。
+- 此外新增聚焦搜索功能，在任意界面按下Ctrl + Q的快捷键即刻出发，可以快速进入学习模式，如输入黑曜石收藏:1 即可进入其背诵模式。  
 
-![image-20250327150945288](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327150945288.png)
 
-### v1.2.0：单词标记、黑曜石特殊卡片、全局聚焦搜索
+### **功能展示**
 
-目前背诵模式可以标记单词，按W 标记（在结束背诵后，将该单词复制到黑曜石收藏中）按S添加删除标记，在结束背诵模式的时候可以根据提示选择是否删除带有删除标记的单词。具体可以从单词卡片的边框和右上角的标签观察标记状态![image-20250329124940305](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124940305.png)
+ 
 
-![image-20250329124924100](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124924100.png)
+![主页卡片展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/1abca16653d4bd62cddcaf75cbc1e97d.gif)
 
-![image-20250329124953863](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124953863.png)
+![学习功能展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/a68822b2d897040cc540bfa4a00c777c.gif)
 
-![image-20250329124638898](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124638898.png)
+![AI生成单词功能展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/5afaeebac96d47115fa3e0c4512339b4.gif)
 
-筛选栏新增特殊卡片，黑曜石为其中之一的特殊卡片，可以把所有在背诵模式标记的单词自动收入黑曜石收藏中。
 
-此外新增聚焦搜索功能，在任意界面按下Ctrl + Q的快捷键即刻出发，可以快速进入学习模式，如输入黑曜石收藏:1 即可进入其背诵模式。  
 
-![image-20250329125320571](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329125320571.png)
-
-## 技术栈
-
-- **后端**：Python 3.10.16、Flask 3.0.2、Flask - SQLAlchemy 3.1.1、Flask - Migrate 4.0.5
-- **前端**：HTML、CSS、JavaScript
-- **数据库**：SQLite
+![全局搜索展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/539be41f6e2b561d6521df774cd3aff1.gif)
 
 ## 安装与运行
 
 ### 1. 克隆项目
 
 ```Bash
-https://github.com/fzg001/word_web.git
+git clone https://github.com/fzg001/word_web.git
 cd wordweb
 ```
 
@@ -96,13 +86,11 @@ DATABASE_URL=sqlite:///wordweb.db
 }
 ```
 
-
-
 ### 6. 初始化数据库
 
 ```Bash
-flask db init
-flask db migrate
+flask db init #如已经有数据库文件，则跳过该步骤
+flask db migrate 
 flask db upgrade
 ```
 
@@ -112,7 +100,7 @@ flask db upgrade
 python run.py
 ```
 
-打开浏览器，访问 `http://0.0.0.0:5000` 即可开始使用。
+打开浏览器，访问 http://localhost:5000/即可开始使用。
 
 ### 8. 使用 Docker 部署
 
@@ -132,77 +120,43 @@ docker pull rheshyike/wordweb:latest
 docker run -p 5000:5000 rheshyike/wordweb:latest
 ```
 
-## 使用步骤
-
-### 1. 创建新单词组
-
-- 打开浏览器，访问 `http://0.0.0.0:5000`，进入系统首页。
-- 点击新建组别的链接，进入创建页面。![image-20250327151113066](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151113066.png)
-- 在“组别名称”输入框中输入单词组的名称，例如“生物学基础词汇”。
-- 若想手动输入单词，在“单词列表”输入框中按照“英文 - 中文”的格式逐行输入单词，支持带序号和格式标记的输入，如: "1. **Word** - 单词"。
-- 若想使用 AI 生成单词，在输入“组别名称”后，点击“🤖 AI 生成”按钮。
-- 系统将调用 AI 大模型生成相关单词列表，并自动填充到“单词列表”输入框中。
-- 检查生成的单词列表，如有需要可进行手动修改。
-- ![image-20250327151253174](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151253174.png)
-- 点击“提交”按钮，系统将验证输入的单词格式，并创建新的单词组。
-
-### 2. 编辑单词组
-
-- 在系统首页或单词组管理页面，找到需要编辑的单词组，点击“编辑”链接。
-- 在编辑页面，可以修改“组别名称”和“单词列表”。
-- ![image-20250327151339120](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151339120.png)
-- 完成修改后，点击“提交”按钮，系统将更新单词组信息。
-
-### 3. 删除单词组
-
-- 在系统首页或单词组管理页面，找到需要删除的单词组，点击“删除”按钮。
-- 系统将提示确认删除操作，确认后将删除该单词组及其包含的所有单词。![image-20250327151413903](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151413903.png)
-
-### 4. 背诵单词
-
-- 在系统首页，找到想要背诵的单词组，点击“背诵”链接。![image-20250327151501164](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151501164.png)
-- 进入背诵模式，系统将分页显示单词，支持使用键盘方向键快速导航。![image-20250327151510421](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151510421.png)
-- 完成所有单词的背诵后，系统将自动记录背诵次数。![image-20250327151520523](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151520523.png)
-
-### 5. 测试单词
-
-- 在系统首页，找到想要测试的单词组。
-- 选择顺序或乱序测试模式，开始测试。
-- 系统将逐个显示英文单词，用户需要输入对应的中文释义。
-- 提交答案后，系统将自动判断对错，并计算正确率。
-- 测试完成后，系统将记录测试结果，包括测试次数和正确率。![image-20250327151602350](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327151602350.png)
-
-## 项目结构
+## 项目结构 V1.0
 
 ```Plain
-wordweb/
-├── app/
-│   ├── blueprints/
-│   │   ├── main.py
-│   │   ├── groups.py
-│   │   └── practice.py
-│   ├── templates/
-│   │   ├── base.html
-│   │   ├── index.html
-│   │   ├── create_group.html
-│   │   ├── edit_group.html
-│   │   ├── manage_groups.html
-│   │   ├── group_detail.html
-│   │   ├── study_mode.html
-│   │   └── quiz_mode.html
-│   ├── models.py
+wordweb/                                     # 项目根目录
+├── app/                                     # 应用程序主目录
+│   ├── blueprints/                          # 包含不同功能模块
+│   │   ├── main.py                          # 主页面路由处理，显示单词组列表
+│   │   ├── groups.py                        # 单词组管理相关路由（创建、编辑、删除等）
+│   │   └── practice.py						 # 学习功能路由（背诵模式、测试模式）
+│   ├── templates/                           # HTML模板文件目录
+│   │   ├── base.html                        # 基础模板，提供通用页面结构和导航
+│   │   ├── index.html                       # 主页模板，显示所有单词组卡片
+│   │   ├── create_group.html                # 创建新单词组的页面
+│   │   ├── edit_group.html                  # 编辑现有单词组的页面
+│   │   ├── manage_groups.html               # 管理单词组的页面
+│   │   ├── group_detail.html                # 单词组详情页面，查看组内单词
+│   │   ├── study_mode.html                  # 背诵模式页面
+│   │   └── quiz_mode.html                   # 测试模式页面，用于测验单词
+│   ├── models.py                            # 数据库模型定义（WordGroup, Word, GroupStats等）
 │   ├── __init__.py
 │   ├── config.py
-│   └── utils/
+│   └── utils/                               # 工具函数目录
 │       └── validation.py
-├── migrations/
+├── migrations/                              # 数据库迁移相关文件
 │   ├── env.py
 │   └── alembic.ini
-├── static/
+├── static/                                  # 静态资源文件目录
 │   └── style.css
-├── run.py
-└── requirements.txt
+├── run.py                                   # 应用程序入口点，启动Flask服务器
+└── requirements.txt                         # 项目依赖包列表
 ```
+
+## 技术栈
+
+- **后端**：Python 3.10.16、Flask 3.0.2、Flask - SQLAlchemy 3.1.1、Flask - Migrate 4.0.5
+- **前端**：HTML、CSS、JavaScript
+- **数据库**：SQLite
 
 ## 贡献指南
 
@@ -217,3 +171,8 @@ wordweb/
 ## 许可证
 
 本项目采用 MIT 许可证。
+
+
+
+
+

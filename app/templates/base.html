@@ -39,7 +39,6 @@
             <a href="{{ url_for('groups.create_group') }}">新建组别</a>
             <a href="{{ url_for('groups.manage_groups') }}">编辑组别</a>
             <a href="{{ url_for('settings.index') }}">设置</a>
-            <a href="#" onclick="testAPI(); return false;" style="color: #ff5722;">测试API</a>
         </div>
     </nav>
     
@@ -71,18 +70,6 @@
 
 <script>
 
-function testAPI() {
-    fetch('/api/groups')
-        .then(response => response.json())
-        .then(data => {
-            console.log('API测试结果:', data);
-            alert('API返回了 ' + (data.groups ? data.groups.length : 0) + ' 个组。详情请查看控制台');
-        })
-        .catch(error => {
-            console.error('API测试失败:', error);
-            alert('API测试失败: ' + error);
-        });
-}
 
 
 

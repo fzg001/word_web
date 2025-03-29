@@ -24,8 +24,12 @@ ENV/
 .idea/
 
 # 迁移缓存
+migrations/
 migrations/__pycache__/
 
-
+#DOCKER
 Dockerfile
 .dockerignore 
+
+#修复脚本
+fix.py
