@@ -1593,7 +1593,7 @@ nav a:hover::after {
 .theme-preview.auto .theme-icon {
     top: 10px; /* 调整图标位置到顶端 */
     position: absolute;
-    opacity: 0.9;
+    opacity: 0.1;
 }
 
 
@@ -2072,4 +2072,179 @@ nav a.active {
 .space-placeholder {
     min-height: 38px; /* 与表单控件高度相同 */
     margin-bottom: 1rem; /* 与表单控件外边距相同 */
+}
+
+ 
+
+/* 全局搜索覆盖层 */
+.global-search {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 10vh;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.global-search.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 搜索容器 */
+.search-container {
+    width: 650px;
+    max-width: 90%;
+    background: var(--card-background, white);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* 搜索输入区域 */
+.search-inner {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.search-icon {
+    color: var(--text-secondary, #666);
+    margin-right: 12px;
+}
+
+#search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    font-size: 16px;
+    color: var(--text-color, #333);
+    outline: none;
+}
+
+.search-shortcut {
+    background: #f1f3f4;
+    color: #5f6368;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* 搜索结果区域 */
+.search-results {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* 无结果提示 */
+.no-results {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-secondary, #666);
+}
+
+/* 结果项 */
+.result-item {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-color, #eee);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-item:hover {
+    background-color: var(--hover-bg, #f5f5f5);
+}
+
+.result-title {
+    font-weight: 500;
+    color: var(--text-color, #333);
+}
+
+.result-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.result-action {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+/* 操作按钮样式 */
+.result-action.study {
+    background-color: rgba(66, 133, 244, 0.1);
+    color: #4285f4;
+}
+
+.result-action.order {
+    background-color: rgba(251, 188, 5, 0.1);
+    color: #fbbc05;
+}
+
+.result-action.random {
+    background-color: rgba(52, 168, 83, 0.1);
+    color: #34a853;
+}
+
+.result-action:hover {
+    transform: translateY(-2px);
+}
+
+/* 命令结果样式 */
+.command-result {
+    padding: 20px;
+    text-align: center;
+}
+
+.command-title {
+    font-size: 14px;
+    color: var(--text-secondary, #666);
+    margin-bottom: 8px;
+}
+
+.command-action {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--primary-color, #4285f4);
+    margin-bottom: 10px;
+}
+
+.command-hint {
+    font-size: 12px;
+    color: var(--text-secondary, #666);
+    padding: 4px 8px;
+    background: #f1f3f4;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* 暗色主题适配 */
+.dark-theme .search-shortcut,
+.dark-theme .command-hint {
+    background: rgba(255, 255, 255, 0.1);
+    color: #aaa;
+}
+
+.dark-theme .result-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
 }
