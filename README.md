@@ -29,6 +29,22 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 
 ![image-20250327150945288](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250327150945288.png)
 
+### v1.2.0：单词标记、黑曜石特殊卡片、全局聚焦搜索
+
+目前背诵模式可以标记单词，按W 标记（在结束背诵后，将该单词复制到黑曜石收藏中）按S添加删除标记，在结束背诵模式的时候可以根据提示选择是否删除带有删除标记的单词。具体可以从单词卡片的边框和右上角的标签观察标记状态![image-20250329124940305](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124940305.png)
+
+![image-20250329124924100](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124924100.png)
+
+![image-20250329124953863](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124953863.png)
+
+![image-20250329124638898](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329124638898.png)
+
+筛选栏新增特殊卡片，黑曜石为其中之一的特殊卡片，可以把所有在背诵模式标记的单词自动收入黑曜石收藏中。
+
+此外新增聚焦搜索功能，在任意界面按下Ctrl + Q的快捷键即刻出发，可以快速进入学习模式，如输入黑曜石收藏:1 即可进入其背诵模式。  
+
+![image-20250329125320571](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/image-20250329125320571.png)
+
 ## 技术栈
 
 - **后端**：Python 3.10.16、Flask 3.0.2、Flask - SQLAlchemy 3.1.1、Flask - Migrate 4.0.5
