@@ -25,7 +25,6 @@ ENV/
 
 # 迁移缓存
 migrations/
-migrations/__pycache__/
 
 #DOCKER
 Dockerfile
