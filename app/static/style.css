@@ -2248,3 +2248,182 @@ nav a.active {
 .dark-theme .result-item:hover {
     background-color: rgba(255, 255, 255, 0.05);
 }
+
+/* 特殊卡片筛选器样式 */
+.chip.special {
+    background: linear-gradient(135deg, #9c27b0, #673ab7);
+    color: white;
+}
+
+/* 特殊卡片基础样式 */
+.special-card {
+    background: linear-gradient(145deg, #f5f0ff, #eee6ff);
+    border: 2px solid #9c27b0 !important;
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2) !important;
+    position: relative;
+    overflow: hidden;
+    animation: special-pulse 3s infinite;
+}
+
+/* 特殊卡片徽章样式 */
+.card-badge.special {
+    background-color: #9c27b0;
+    color: white;
+    box-shadow: 0 2px 4px rgba(156, 39, 176, 0.3);
+}
+
+/* 特殊卡片动画效果 */
+@keyframes special-pulse {
+    0% {
+        box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2);
+        transform: translateY(-3px) scale(1);
+    }
+    50% {
+        box-shadow: 0 10px 25px rgba(156, 39, 176, 0.35);
+        transform: translateY(-7px) scale(1.02);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2);
+        transform: translateY(-3px) scale(1);
+    }
+}
+
+/* 黑曜石卡片特殊样式 (特殊类型1) */
+.special-type-1 {
+    background: linear-gradient(145deg, #333, #1a1a1a);
+    border: 2px solid #444 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    color: #fff;
+}
+
+.special-type-1 h2, 
+.special-type-1 p, 
+.special-type-1 .stats span {
+    color: #e0e0e0;
+}
+
+/* 其他特殊类型样式占位 */
+.special-type-2 {
+    background: linear-gradient(145deg, #6a0dad, #9400d3);
+    border: 2px solid #800080 !important;
+    color: #fff;
+}
+
+.special-type-3 {
+    background: linear-gradient(145deg, #00bcd4, #3f51b5);
+    border: 2px solid #2196f3 !important;
+    color: #fff;
+}
+
+/* 紧凑视图下特殊卡片样式 */
+.compact-view .special-card::before {
+    background: linear-gradient(135deg, #9c27b0, #673ab7);
+    box-shadow: 0 0 5px rgba(156, 39, 176, 0.5);
+}
+
+/* 紧凑视图下黑曜石卡片样式 */
+.compact-view .special-type-1::before {
+    background: linear-gradient(135deg, #444, #111);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+
+/* 特殊筛选按钮样式 */
+.filter-btn input[type="checkbox"][data-filter="special"]:checked + .chip.special {
+    background: linear-gradient(135deg, #9c27b0, #673ab7);
+    color: white;
+}
+
+.filter-btn input[type="checkbox"][data-filter="special"]:not(:checked) + .chip.special {
+    background: #e0e0e0;
+    color: #5f6368;
+}
+
+/* 修改现有的特殊芯片样式为默认选中状态 */
+.chip.special {
+    background: #e0e0e0;
+    color: #5f6368;
+    transition: all 0.3s ease;
+}
+
+/* 黑曜石卡片样式（特殊类型1）- 确保覆盖默认特殊卡片样式 */
+.special-type-1 {
+    background: linear-gradient(145deg, #333, #1a1a1a) !important;
+    border: 2px solid #444 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    color: #fff !important;
+}
+
+.special-type-1 h2, 
+.special-type-1 p, 
+.special-type-1 .stats span,
+.special-type-1 .card-actions a {
+    color: #e0e0e0 !important;
+}
+
+.special-type-1 .card-badge.special {
+    background-color: #333 !important;
+    color: #fff !important;
+    border: 1px solid #666;
+}
+
+/* 添加黑曜石独特的动画 */
+@keyframes obsidian-glow {
+    0% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 8px 20px rgba(100, 100, 100, 0.3);
+    }
+    100% {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+}
+
+.special-type-1 {
+    animation: obsidian-glow 4s infinite !important;
+}
+
+/* 完全覆盖黑曜石卡片标签样式和动画 */
+.special-type-1 .card-badge.special {
+    background-color: #333 !important;
+    color: #fff !important;
+    border: 1px solid #666 !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important; /* 替换紫色阴影 */
+    animation: none !important; /* 禁用任何动画 */
+}
+
+/* 确保黑曜石卡片本身不使用紫色动画 */
+.special-type-1 {
+    animation: obsidian-glow 4s infinite !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important; /* 黑色阴影替代紫色 */
+}
+
+/* 在紧凑视图中也应用同样的规则 */
+.compact-view .special-type-1 .card-badge.special {
+    background-color: #333 !important;
+    color: #fff !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    animation: none !important;
+}
+
+/* 修改特殊筛选按钮未选中样式，确保与其他筛选按钮一致 */
+.filter-btn input[type="checkbox"][data-filter="special"]:not(:checked) + .chip.special {
+    opacity: 0.5 !important;
+    background-color: #f1f3f4 !important; /* 与其他按钮一致 */
+    color: #80868b !important; /* 与其他按钮一致 */
+    border-color: #dadce0 !important; /* 与其他按钮一致 */
+}
+
+/* 确保不被其他规则覆盖 */
+.chip.special {
+    transition: all 0.3s ease;
+    /* 移除默认样式，让选中/未选中状态完全控制样式 */
+}
+
+/* 选中状态保持不变 */
+.filter-btn input[type="checkbox"][data-filter="special"]:checked + .chip.special {
+    background: linear-gradient(135deg, #9c27b0, #673ab7);
+    color: white;
+    border-color: #9c27b0;
+    opacity: 1;
+}

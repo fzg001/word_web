@@ -33,43 +33,47 @@
             </div>
         </div>
     </div>
-    
-    <!-- 新增筛选控制区 -->
-    <div class="filter-controls">
-        <div class="filter-btn-group">
-            <span class="filter-label">筛选：</span>
-            <label class="filter-btn">
-                <input type="checkbox" data-filter="diamond">
-                <span class="chip diamond">钻石</span>
-            </label>
-            <label class="filter-btn">
-                <input type="checkbox" data-filter="gold">
-                <span class="chip gold">黄金</span>
-            </label>
-            <label class="filter-btn">
-                <input type="checkbox" data-filter="bronze">
-                <span class="chip bronze">青铜</span>
-            </label>
-            <label class="filter-btn">
-                <input type="checkbox" data-filter="basic" >
-                <span class="chip basic">基础</span>
-            </label>
-        </div>
+     <!-- 筛选控制区 -->
+    <div class="filter-btn-group">
+        <span class="filter-label">筛选：</span>
+        <label class="filter-btn">
+            <input type="checkbox" data-filter="special">
+            <span class="chip special">特殊</span>
+        </label>
+        <label class="filter-btn">
+            <input type="checkbox" data-filter="diamond">
+            <span class="chip diamond">钻石</span>
+        </label>
+        <label class="filter-btn">
+            <input type="checkbox" data-filter="gold">
+            <span class="chip gold">黄金</span>
+        </label>
+        <label class="filter-btn">
+            <input type="checkbox" data-filter="bronze">
+            <span class="chip bronze">青铜</span>
+        </label>
+        <label class="filter-btn">
+            <input type="checkbox" data-filter="basic">
+            <span class="chip basic">基础</span>
+        </label>
+        <!-- 添加特殊类型筛选按钮 -->
+
     </div>
+
 </div>
 
 <div class="group-list" id="sortable-groups">
     {% for group in groups %}
     <div class="group-card 
-        {% if group.stats.random_last_score == 1.0 %}diamond-card
-        {% elif group.stats.last_score == 1.0 %}gold-card
-        {% elif group.stats.study_count >= 3 %}bronze-card
+        {% if group.is_special %}special-card special-type-{{ group.special_type }}
+        {% elif group.stats and group.stats.random_last_score == 1.0 %}diamond-card
+        {% elif group.stats and group.stats.last_score == 1.0 %}gold-card
+        {% elif group.stats and group.stats.study_count >= 3 %}bronze-card
         {% else %}basic-card
         {% endif %}"
         data-id="{{ group.id }}"
-        data-type="{% if group.stats.random_last_score == 1.0 %}diamond{% elif group.stats.last_score == 1.0 %}gold{% elif group.stats.study_count >= 3 %}bronze{% else %}basic{% endif %}"
+        data-type="{% if group.is_special %}special{% elif group.stats and group.stats.random_last_score == 1.0 %}diamond{% elif group.stats and group.stats.last_score == 1.0 %}gold{% elif group.stats and group.stats.study_count >= 3 %}bronze{% else %}basic{% endif %}"
         data-order="{{ group.order_index or loop.index }}">
-        
         <!-- 添加卡片内部容器用于翻转效果 -->
         <div class="card-inner">
             <!-- 卡片正面 -->
@@ -87,13 +91,23 @@
                     <a href="{{ url_for('practice.quiz_mode', group_id=group.id, mode='random') }}" class="btn glass-btn random">乱序测试</a>
                 </div>
                 
-                {% if group.stats.random_last_score == 1.0 %}
-                <div class="card-badge diamond">钻石</div>
-                {% elif group.stats.last_score == 1.0 %}
-                <div class="card-badge gold">黄金</div>
-                {% elif group.stats.study_count >= 3 %}
-                <div class="card-badge bronze">青铜</div>
+
+            <!-- 右上角标签-->
+            {% if group.is_special %}
+            <div class="card-badge special">
+                {% if group.special_type == 1 %}
+                黑曜石
+                {% else %}
+                特殊-{{ group.special_type }}
                 {% endif %}
+            </div>
+            {% elif group.stats.random_last_score == 1.0 %}
+            <div class="card-badge diamond">钻石</div>
+            {% elif group.stats.last_score == 1.0 %}
+            <div class="card-badge gold">黄金</div>
+            {% elif group.stats.study_count >= 3 %}
+            <div class="card-badge bronze">青铜</div>
+            {% endif %}
             </div>
             
             <!-- 卡片背面 (小卡片翻转后显示) -->
@@ -309,7 +323,8 @@ document.addEventListener('DOMContentLoaded', function() {
         diamond: true,
         gold: true,
         bronze: true,
-        basic: true
+        basic: true,
+        special: true  // 添加特殊类型默认为选中
     };
     
     // 初始化复选框状态

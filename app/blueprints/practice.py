@@ -98,8 +98,10 @@ def complete_study(group_id):
         if deletion_count > 0:
             flash(f'背诵完成！共有{deletion_count}个单词被标记为待删除。如果需要删除请按Y，否则按N，按L清除所有删除标记[deletion-prompt]', 'warning')
             session['deletion_group_id'] = group_id
+            update_obsidian_collection()
         else:
             flash('背诵完成！', 'success')
+            update_obsidian_collection()
     
     # 清除会话标记
     if session_key in session:
@@ -108,6 +110,7 @@ def complete_study(group_id):
         session.pop(complete_key)
     
     # 确保函数总是返回值
+    update_obsidian_collection()
     return redirect(url_for('main.index'))
 
 @practice_bp.route('/quiz/<int:group_id>/<mode>', methods=['GET', 'POST'])
@@ -415,3 +418,15 @@ def clear_deletion_marks(group_id):
     
     flash(f'已清除 {mark_count} 个删除标记', 'success')
     return redirect(url_for('main.index'))
+
+def update_obsidian_collection():
+    """更新黑曜石收藏卡片中的单词"""
+    obsidian_group = WordGroup.query.filter_by(name="黑曜石收藏").first()
+    if obsidian_group:
+        from app.blueprints.special import update_obsidian_words
+        try:
+            print("正在更新黑曜石收藏...")
+            update_obsidian_words(obsidian_group)
+            print("黑曜石收藏更新完成")
+        except Exception as e:
+            print(f"更新黑曜石收藏时出错: {str(e)}")

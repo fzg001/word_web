@@ -7,6 +7,8 @@ class WordGroup(db.Model):
     name = db.Column(db.String(100), unique=True, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     order_index = db.Column(db.Integer, default=0)  # 添加排序字段
+    is_special = db.Column(db.Boolean, default=False)
+    special_type = db.Column(db.Integer, default=0)  # 1-9表示不同特殊类型
     words = db.relationship('Word', backref='group', lazy='dynamic', cascade='all, delete-orphan')
     stats = db.relationship('GroupStats', backref='group', uselist=False, cascade='all, delete-orphan')
 
