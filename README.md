@@ -46,7 +46,7 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 ### 1. 克隆项目
 
 ```Bash
-git clone https://github.com/fzg001/word_web.git
+git clone https://github.com/fzg001/wordweb.git
 cd wordweb
 ```
 
@@ -106,7 +106,9 @@ python run.py
 
 #### 8.1 拉取 Docker 镜像
 
-你可以从 Docker Hub 拉取预构建的 WordWeb 镜像。请确保你已经安装了 Docker，然后运行以下命令：
+你可以从 Docker Hub 拉取预构建的 WordWeb 镜像。[rheshyike/wordweb Tags | Docker Hub](https://hub.docker.com/repository/docker/rheshyike/wordweb/tags)
+
+请确保你已经安装了 Docker，然后运行以下命令：
 
 ```bash
 docker pull rheshyike/wordweb:latest
