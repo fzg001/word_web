@@ -37,8 +37,6 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 
 ![AI生成单词功能展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/5afaeebac96d47115fa3e0c4512339b4.gif)
 
-
-
 ![全局搜索展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/539be41f6e2b561d6521df774cd3aff1.gif)
 
 ## 安装与运行
