@@ -1,5 +1,6 @@
 # 配置和密钥
 app/config/ai_settings.json
+app/config/webdav_settings.json
 .env
 
 # 数据库文件
@@ -30,5 +31,3 @@ migrations/
 Dockerfile
 .dockerignore 
 
-#修复脚本
-fix.py

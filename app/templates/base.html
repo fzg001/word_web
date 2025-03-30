@@ -6,17 +6,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script>
         (function() {
-            // 立即读取并应用主题设置，防止闪烁
-            var savedTheme = localStorage.getItem('wordweb_theme') || 'light';
-            
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark-theme');
-            } else if (savedTheme === 'auto') {
-                // 根据当前时间自动设置深浅色模式
-                var currentHour = new Date().getHours();
-                if (currentHour >= 18 || currentHour < 6) {
+            try {
+                const savedTheme = localStorage.getItem('wordweb_theme');
+                if (savedTheme === 'dark' || (savedTheme === 'auto' && (new Date().getHours() >= 18 || new Date().getHours() < 6))) {
+                    document.documentElement.style.backgroundColor = '#121212';
+                    document.documentElement.style.color = '#e0e0e0';
                     document.documentElement.classList.add('dark-theme');
                 }
+            } catch(e) {
+                console.error('预加载深色主题失败', e);
             }
         })();
     </script>
@@ -29,6 +27,53 @@
         tabindex: 0;
     }
     </style>
+
+
+   <!-- 防止深色模式闪白的预加载样式 -->
+   <script>
+    // 立即应用已保存的主题设置，防止闪烁
+    (function() {
+        var savedTheme = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // 确定应该使用的主题
+        var useDarkTheme = false;
+        
+        if (savedTheme === 'dark') {
+            useDarkTheme = true;
+        } else if (savedTheme === 'auto') {
+            // 自动模式下，根据当前时间或系统偏好决定
+            var hours = new Date().getHours();
+            useDarkTheme = (hours < 6 || hours >= 18) || prefersDark;
+        }
+        
+        // 如果应该使用深色主题，立即添加深色主题类
+        if (useDarkTheme) {
+            document.documentElement.classList.add('dark-theme');
+            document.body.classList.add('dark-theme');
+            
+            // 通过内联样式立即设置背景色，不等待CSS加载
+            var style = document.createElement('style');
+            style.textContent = `
+                html, body { 
+                    background-color: #121212 !important; 
+                    transition: none !important;
+                }
+                .study-container, .quiz-container,
+                .study-card, .quiz-card {
+                    background-color: #1e1e1e !important;
+                    transition: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    })();
+</script>
+
+
+
+
+
 
 </head>
 <body>

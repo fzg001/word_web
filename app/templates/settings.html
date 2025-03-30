@@ -4,11 +4,76 @@
 {% block content %}
 <h1>系统设置</h1>
 
-<div class="settings-tabs">
-    <div class="tab active" data-tab="ai">AI 设置</div>
-    <div class="tab" data-tab="general">通用设置</div>
-    <div class="tab" data-tab="about">关于</div>
+<div class="tab-list">
+    <button class="tab-btn btn btn-secondary active" data-tab="general">基本设置</button>
+    <button class="tab-btn btn btn-secondary" data-tab="ai">AI设置</button>
+    <button class="tab-btn btn btn-secondary" data-tab="backup">备份与恢复</button>
+    <button class="tab-btn btn btn-secondary" data-tab="about">关于</button>
 </div>
+
+<div class="tab-content" id="backup-settings" style="display:none;">
+    <div class="form-container">
+        <form class="styled-form">
+            <h2>数据库备份与恢复</h2>
+            
+            <!-- 本地备份部分 -->
+            <div class="form-group">
+                <label>本地备份</label>
+                <div class="backup-row">
+                    <p class="form-hint">将数据库文件备份到本地存储</p>
+                    <button type="button" id="local-backup-btn" class="btn btn-primary">创建本地备份</button>
+                </div>
+            </div>
+            
+            <!-- WebDAV同步部分 -->
+            <div class="form-group">
+                <label>WebDAV同步</label>
+                <p class="form-hint">推荐使用InfiniCloud进行数据库同步</p>
+                
+                <div class="form-group">
+                    <label for="webdav-url">WebDAV网址</label>
+                    <input type="url" id="webdav-url" class="form-control" 
+                           placeholder="https://bora.teracloud.jp/dav" 
+                           value="{{ webdav_settings.url if webdav_settings else '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="webdav-username">用户名</label>
+                    <input type="text" id="webdav-username" class="form-control" 
+                           placeholder="您的用户名" 
+                           value="{{ webdav_settings.username if webdav_settings else '' }}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="webdav-password">密码</label>
+                    <input type="password" id="webdav-password" class="form-control" 
+                           placeholder="您的密码" 
+                           value="{{ '••••••••' if webdav_settings and webdav_settings.password else '' }}">
+                    <input type="hidden" id="real-password" value="{{ webdav_settings.password if webdav_settings else '' }}">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" id="verify-webdav-btn" class="btn btn-secondary">验证服务器</button>
+                    <button type="button" id="save-webdav-btn" class="btn btn-primary"> 保存设置 </button>
+                    <span id="webdav-status" class="status-text"></span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>数据同步操作</label>
+                <p class="form-hint">上传或下载数据库(需先验证服务器)</p>
+                <div class="form-actions">
+                    <button type="button" id="upload-db-btn" class="btn btn-secondary" disabled>上传数据库</button>
+                    <button type="button" id="download-db-btn" class="btn btn-secondary" disabled>下载数据库</button>
+                    <span id="sync-status" class="status-text"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
 
 <div class="tab-content active" id="ai-settings">
     <div class="form-container">
@@ -73,21 +138,18 @@
                     <label class="theme-option">
                         <input type="radio" name="theme" value="light">
                         <span class="theme-preview light">
-                            <i class="theme-icon sun-icon"></i>
                             <span>浅色</span>
                         </span>
                     </label>
                     <label class="theme-option">
                         <input type="radio" name="theme" value="dark">
                         <span class="theme-preview dark">
-                            <i class="theme-icon moon-icon"></i>
                             <span>深色</span>
                         </span>
                     </label>
                     <label class="theme-option">
                         <input type="radio" name="theme" value="auto">
                         <span class="theme-preview auto">
-                            <i class="theme-icon auto-icon"></i>
                             <span>自动</span>
                         </span>
                     </label>
@@ -363,34 +425,289 @@
 
 
 
-
-
-
-
 <script>
+
+
+
+
+// 全局showMessage函数
+window.showMessage = function(message, category = 'info') {
+    console.log(`显示消息: ${message}, 类别: ${category}`);
+    
+    // 创建通知元素
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${category} floating-alert auto-dismiss`;
+    notification.textContent = message;
+    
+    // 查找或创建通知容器
+    let alertsContainer = document.querySelector('.floating-alerts');
+    if (!alertsContainer) {
+        alertsContainer = document.createElement('div');
+        alertsContainer.className = 'floating-alerts';
+        document.body.appendChild(alertsContainer);
+    }
+    
+    // 添加通知
+    alertsContainer.appendChild(notification);
+    
+    // 设置自动消失
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+};
+
+// 页面加载完成后执行所有功能初始化
 document.addEventListener('DOMContentLoaded', function() {
+
+    // 本地备份功能
+    const localBackupBtn = document.getElementById('local-backup-btn');
+    const backupStatus = document.getElementById('backup-status');
+    
+    localBackupBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        backupStatus.textContent = "正在创建备份...";
+        
+        try {
+            const response = await fetch('/settings/create_backup', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                backupStatus.textContent = `备份成功: ${data.backup_path}`;
+                showMessage('数据库备份成功！', 'success');
+            } else {
+                backupStatus.textContent = `备份失败: ${data.error}`;
+                showMessage('备份失败: ' + data.error, 'danger');
+            }
+        } catch (error) {
+            backupStatus.textContent = "备份过程中发生错误";
+            showMessage('备份过程中发生错误', 'danger');
+            console.error('备份错误:', error);
+        }
+    });
+    
+    // WebDAV功能
+    const verifyWebdavBtn = document.getElementById('verify-webdav-btn');
+    const saveWebdavBtn = document.getElementById('save-webdav-btn');
+    const uploadDbBtn = document.getElementById('upload-db-btn');
+    const downloadDbBtn = document.getElementById('download-db-btn');
+    const webdavStatus = document.getElementById('webdav-status');
+    const syncStatus = document.getElementById('sync-status');
+    
+    // 验证WebDAV服务器
+    verifyWebdavBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const url = document.getElementById('webdav-url').value.trim();
+        const username = document.getElementById('webdav-username').value.trim();
+        const password = document.getElementById('webdav-password').value;
+        
+        if (!url || !username || !password) {
+            webdavStatus.textContent = "请填写所有WebDAV信息";
+            showMessage('请填写所有WebDAV信息', 'warning');
+            return;
+        }
+        
+        webdavStatus.textContent = "正在验证...";
+        
+        try {
+            const response = await fetch('/settings/verify_webdav', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: url,
+                    username: username,
+                    password: password
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                webdavStatus.textContent = "验证成功!";
+                showMessage('WebDAV服务器验证成功!', 'success');
+                uploadDbBtn.disabled = false;
+                downloadDbBtn.disabled = false;
+            } else {
+                webdavStatus.textContent = `验证失败: ${data.error}`;
+                showMessage('验证失败: ' + data.error, 'danger');
+                uploadDbBtn.disabled = true;
+                downloadDbBtn.disabled = true;
+            }
+        } catch (error) {
+            webdavStatus.textContent = "验证过程中发生错误";
+            showMessage('验证过程中发生错误', 'danger');
+            console.error('WebDAV验证错误:', error);
+            uploadDbBtn.disabled = true;
+            downloadDbBtn.disabled = true;
+        }
+    });
+    
+    // 保存WebDAV设置
+    saveWebdavBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const url = document.getElementById('webdav-url').value.trim();
+        const username = document.getElementById('webdav-username').value.trim();
+        const password = document.getElementById('webdav-password').value;
+        
+        if (!url || !username || !password) {
+            webdavStatus.textContent = "请填写所有WebDAV信息";
+            showMessage('请填写所有WebDAV信息', 'warning');
+            return;
+        }
+        
+
+        
+        try {
+            const response = await fetch('/settings/save_webdav', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    url: url,
+                    username: username,
+                    password: password
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showMessage('WebDAV设置已保存!', 'success');
+            } else {
+  
+                showMessage('保存失败: ' + data.error, 'danger');
+            }
+        } catch (error) {
+            showMessage('保存过程中发生错误', 'danger');
+            console.error('WebDAV设置保存错误:', error);
+        }
+    });
+    
+    // 上传数据库
+    uploadDbBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        if (confirm('确定要上传数据库到WebDAV服务器吗？这将覆盖服务器上的现有数据库文件。')) {
+            syncStatus.textContent = "正在上传...";
+            
+            try {
+                const response = await fetch('/settings/upload_db', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+   
+                    showMessage('数据库上传成功!', 'success');
+                } else {
+     
+                    showMessage('上传失败: ' + data.error, 'danger');
+                }
+            } catch (error) {
+                showMessage('上传过程中发生错误', 'danger');
+                console.error('上传错误:', error);
+            }
+        }
+    });
+    
+    // 下载数据库
+    downloadDbBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        if (confirm('确定要从WebDAV服务器下载数据库吗？这将覆盖您的本地数据库文件，可能导致数据丢失。')) {
+            syncStatus.textContent = "正在下载...";
+            
+            try {
+                const response = await fetch('/settings/download_db', {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+            
+                    showMessage('数据库下载成功! 页面将在3秒后刷新...', 'success');
+                    
+                    // 3秒后刷新页面以加载新数据库
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                } else {
+              
+                    showMessage('下载失败: ' + data.error, 'danger');
+                }
+            } catch (error) {
+             
+                showMessage('下载过程中发生错误', 'danger');
+                console.error('下载错误:', error);
+            }
+        }
+    });
+
+
+
+
+    // 确保通知容器存在
+    if (!document.querySelector('.floating-alerts')) {
+        const alertsContainer = document.createElement('div');
+        alertsContainer.className = 'floating-alerts';
+        document.body.appendChild(alertsContainer);
+        console.log('通知容器已创建');
+    }
+    
+
     // 标签页切换功能
-    const tabs = document.querySelectorAll('.tab');
+    const tabBtns = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
     
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+    // 初始化标签页 - 只显示活动标签内容
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+    });
+    
+    // 显示默认活跃的标签内容
+    const activeBtn = document.querySelector('.tab-btn.active');
+    if (activeBtn) {
+        const activeTabId = activeBtn.dataset.tab + '-settings';
+        const activeContent = document.getElementById(activeTabId);
+        if (activeContent) {
+            activeContent.style.display = 'block';
+        }
+    }
+
+    // 标签切换点击事件
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
             const tabId = this.dataset.tab;
             
             // 切换标签页激活状态
-            tabs.forEach(t => t.classList.remove('active'));
+            tabBtns.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
             
             // 切换内容区域
             tabContents.forEach(content => {
-                content.classList.remove('active');
-                if (content.id === `${tabId}-settings`) {
-                    content.classList.add('active');
-                }
+                content.style.display = 'none';
             });
+            
+            const targetContent = document.getElementById(`${tabId}-settings`);
+            if (targetContent) {
+                targetContent.style.display = 'block';
+            }
+            
+            // 保存选择到localStorage
+            localStorage.setItem('wordweb_settings_tab', tabId);
         });
     });
-    
+   
     // 温度滑块值显示
     const tempSlider = document.getElementById('temperature');
     const tempValue = document.getElementById('temp-value');
@@ -441,12 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-});
-
-
-
-
-document.addEventListener('DOMContentLoaded', function() {
+    
     // 主题设置功能
     const themeOptions = document.querySelectorAll('input[name="theme"]');
     
@@ -512,16 +824,22 @@ document.addEventListener('DOMContentLoaded', function() {
         setInterval(checkAutoTheme, 600000);
     }
     
-
+    // 从localStorage获取上次选择的标签
+    const savedTab = localStorage.getItem('wordweb_settings_tab');
+    
+    // 如果有保存的标签，激活它
+    if (savedTab) {
+        const targetBtn = document.querySelector(`.tab-btn[data-tab="${savedTab}"]`);
+        if (targetBtn) {
+            // 手动触发点击事件，确保切换到保存的选项卡
+            targetBtn.click();
+        }
+    }
 });
-
-
-
-
-
-
-
 </script>
+
+
+
 {% endblock %}
 
 

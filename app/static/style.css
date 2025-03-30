@@ -2427,3 +2427,564 @@ nav a.active {
     border-color: #9c27b0;
     opacity: 1;
 }
+
+/* 备份与恢复页面样式 */
+.settings-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.settings-section:last-child {
+    border-bottom: none;
+}
+
+.status-text {
+    margin-left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    display: inline-block;
+    min-width: 100px;
+}
+
+.webdav-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dotted var(--border-color, #eee);
+}
+
+/* 暗色主题适配 */
+body.dark-theme .settings-section {
+    border-color: var(--border-color, #333);
+}
+
+body.dark-theme .webdav-actions {
+    border-color: var(--border-color, #333);
+}
+
+/* 选项卡样式优化 */
+.tab-list {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.tab-btn.active {
+    background-color: var(--primary-color, #4285f4) !important;
+    color: white !important;
+    border-color: var(--primary-color, #4285f4) !important;
+}
+
+/* 深色模式适配 */
+body.dark-theme .tab-btn {
+    background-color: #333;
+    border-color: #444;
+    color: #eee;
+}
+
+body.dark-theme .tab-btn:hover:not(.active) {
+    background-color: #444;
+}
+
+/* 深色模式按钮和容器适配 */
+body.dark-theme .btn.btn-secondary {
+    background-color: #333;
+    border-color: #555;
+    color: #eee;
+}
+
+body.dark-theme .btn.btn-secondary:hover:not(:disabled) {
+    background-color: #444;
+}
+
+body.dark-theme .btn.btn-primary {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+}
+
+body.dark-theme .filter-btn-group,
+body.dark-theme .view-switch-group {
+    background: #252525;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body.dark-theme .chip {
+    border-color: #444;
+}
+
+body.dark-theme .filter-btn input[type="checkbox"]:not(:checked) + .chip,
+body.dark-theme .view-option input[type="radio"]:not(:checked) + .view-chip {
+    background-color: #333;
+    color: #aaa;
+}
+
+body.dark-theme .styled-form {
+    background-color: #1e1e1e;
+    border-color: #333;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+body.dark-theme form.styled-form input,
+body.dark-theme form.styled-form select,
+body.dark-theme form.styled-form textarea {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+}
+
+body.dark-theme .form-hint {
+    color: #aaa;
+}
+
+body.dark-theme .form-range {
+    background-color: #444;
+}
+
+body.dark-theme .form-range::-webkit-slider-thumb {
+    background-color: #1a73e8;
+}
+
+body.dark-theme .range-values {
+    color: #aaa;
+}
+
+body.dark-theme .form-actions {
+    border-top-color: #333;
+}
+
+body.dark-theme table {
+    border-color: #333;
+}
+
+body.dark-theme th {
+    background-color: #252525;
+    color: #eee;
+}
+
+body.dark-theme td {
+    border-bottom-color: #333;
+}
+
+body.dark-theme tbody tr:hover {
+    background-color: #2a2a2a;
+}
+
+body.dark-theme .github-info p {
+    background-color: #252525;
+    border-color: #444;
+}
+
+body.dark-theme .status-text {
+    color: #ddd;
+    background-color: #333;
+}
+
+body.dark-theme .github-info p:hover {
+    background-color: #2a2a2a;
+}
+
+body.dark-theme .shortcuts-table {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-theme .shortcut-key {
+    background-color: #333;
+    border-color: #444;
+    color: #eee;
+}
+
+/* 修复其他特定元素 */
+body.dark-theme .view-switch-controls,
+body.dark-theme .filter-controls {
+    color: #eee;
+}
+
+body.dark-theme .filter-label,
+body.dark-theme .view-label {
+    color: #bbb;
+}
+
+/* 修复主题选择按钮样式 */
+.theme-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.theme-option {
+    cursor: pointer;
+}
+
+.theme-option input {
+    display: none;
+}
+
+/* 新的主题预览样式 - 移除图标 */
+.theme-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    border: 2px solid var(--border-color);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+/* 浅色主题预览 */
+.theme-preview.light {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+/* 深色主题预览 */
+.theme-preview.dark {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+/* 自动主题预览 - 更简洁的设计 */
+.theme-preview.auto {
+    background: linear-gradient(to right, #ffffff 50%, #1e1e1e 50%);
+    color: #333333;
+}
+
+/* 选中状态 */
+.theme-option input:checked + .theme-preview {
+    border-color: var(--primary-color, #4285f4);
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+}
+
+/* 深色模式适配 */
+body.dark-theme .theme-preview {
+    border-color: #444;
+}
+
+/* 移除不需要的图标相关样式 */
+.theme-icon, .sun-icon, .moon-icon, .auto-icon {
+    display: none;
+}
+
+
+/* 背诵和测试界面深色模式适配 */
+body.dark-theme .progress-container {
+    color: var(--text-color);
+}
+
+body.dark-theme .progress-bar-wrapper {
+    background: #333;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body.dark-theme .progress-bar {
+    background: linear-gradient(90deg, var(--primary-color, #4285f4), #5e97f6);
+}
+
+body.dark-theme .progress-status {
+    background: #333;
+    color: #e0e0e0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+body.dark-theme .keyboard-hint {
+    background: #333;
+    color: #aaa;
+}
+
+body.dark-theme .study-card,
+body.dark-theme .quiz-card {
+    background: var(--card-background, #1e1e1e) !important;
+    border: 1px solid var(--border-color, #333) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+}
+
+body.dark-theme .study-card h2,
+body.dark-theme .quiz-card h2 {
+    color: var(--text-color, #e0e0e0) !important;
+}
+
+body.dark-theme .study-card p {
+    color: var(--secondary-text, #b0b0b0);
+}
+
+body.dark-theme .nav-left .btn,
+body.dark-theme .nav-right .btn,
+body.dark-theme .quiz-actions .btn {
+    background-color: #333;
+    border-color: #444;
+    color: #eee;
+}
+
+body.dark-theme .nav-left .btn:hover,
+body.dark-theme .nav-right .btn:hover,
+body.dark-theme .quiz-actions .btn:hover {
+    background-color: #444;
+}
+
+body.dark-theme .btn.disabled {
+    background-color: #333;
+    color: #777;
+}
+
+/* 修复status-text在深色模式下的显示问题 */
+body.dark-theme .status-text {
+    background-color: transparent;
+    color: #aaa;
+    border: none;
+    padding: 4px 8px;
+}
+
+/* 仅当有内容时才显示背景 */
+body.dark-theme .status-text:not(:empty) {
+    background-color: #333;
+    border-radius: 4px;
+}
+
+
+/* 修改主题预览样式 */
+.theme-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 50px;
+    border-radius: 8px;
+    font-size: 1rem; /* 增大字体 */
+    font-weight: 500;
+    border: 2px solid var(--border-color);
+    transition: all 0.2s ease;
+    text-align: center; /* 确保文字居中 */
+}
+
+/* 移除不需要的图标相关样式 */
+.theme-icon, .sun-icon, .moon-icon, .auto-icon {
+    display: none;
+}
+
+/* 修复背单词闪白问题 */
+body.dark-theme .study-container,
+body.dark-theme .quiz-container {
+    background-color: var(--background-color, #121212) !important;
+}
+
+body.dark-theme .study-card,
+body.dark-theme .quiz-card {
+    background-color: var(--card-background, #1e1e1e) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    /* 不要设置背景色的过渡效果，避免闪白 */
+}
+
+/* 确保所有卡片元素和容器在深色模式下不会过渡到白色 */
+body.dark-theme * {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease !important;
+    transition-property: transform, box-shadow, opacity !important;
+    /* 明确排除背景色的过渡效果 */
+}
+
+/* 1. 修复按钮长度不一致问题 */
+#verify-webdav-btn, 
+#save-webdav-btn, 
+#upload-db-btn, 
+#download-db-btn,
+#local-backup-btn {
+    min-width: 120px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* 2. 修复深色模式下背诵和测试闪白问题 
+/* 完全禁止任何背景色的过渡效果 */
+* {
+    transition-property: transform, box-shadow, opacity !important;
+}
+
+body.dark-theme .study-container,
+body.dark-theme .quiz-container,
+body.dark-theme .quiz-form,
+body.dark-theme .study-card,
+body.dark-theme .quiz-card {
+    background-color: var(--card-background, #1e1e1e) !important;
+    transition: none !important;
+}
+
+/* 防止闪烁的更强力方法 */
+body.dark-theme .study-card,
+body.dark-theme .quiz-card {
+    -webkit-animation: none !important;
+    animation: none !important;
+    transition: none !important;
+    will-change: auto !important;
+}
+
+/* 3. 测试模式输入框深色模式适配 */
+body.dark-theme .quiz-form .form-control {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+}
+
+body.dark-theme .quiz-form .form-control:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.25);
+}
+
+/* 测试结果显示区域适配 */
+body.dark-theme .answer-display {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+}
+
+
+/* 备份按钮行样式 */
+.backup-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.backup-row .form-hint {
+    margin: 0;
+    flex-grow: 1;
+}
+
+/* 确保深色模式下也显示正常 */
+body.dark-theme .backup-row {
+    border-color: var(--border-color, #333);
+}
+
+/* 修复主题预览按钮文字完全居中 */
+.theme-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 50px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 2px solid var(--border-color);
+    transition: all 0.2s ease;
+    text-align: center;
+    padding: 0; /* 移除内边距干扰 */
+    line-height: 1; /* 统一行高 */
+}
+
+/* 确保内部没有任何元素影响文字居中 */
+.theme-preview span {
+    margin: 0 !important; /* 移除可能的外边距 */
+    padding: 0 !important; /* 移除可能的内边距 */
+    position: static !important; /* 防止定位影响居中 */
+    display: inline !important; /* 防止特殊显示方式影响居中 */
+}
+
+/* 为了防止其他样式干扰，增加权重 */
+.theme-option input:checked + .theme-preview,
+.theme-option input:not(:checked) + .theme-preview {
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 彻底解决深色模式闪白问题 */
+html.dark-theme, 
+body.dark-theme {
+    background-color: #121212 !important;
+    transition: none !important;
+    color-scheme: dark;
+}
+
+/* 确保所有重要元素在深色模式下不会有背景色过渡 */
+body.dark-theme div,
+body.dark-theme main,
+body.dark-theme section,
+body.dark-theme nav,
+body.dark-theme header,
+body.dark-theme footer,
+body.dark-theme .study-container,
+body.dark-theme .quiz-container,
+body.dark-theme .study-card,
+body.dark-theme .quiz-card,
+body.dark-theme .card-front,
+body.dark-theme .card-back,
+body.dark-theme form,
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select {
+    background-color: inherit;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* 确保卡片元素不会闪白 */
+body.dark-theme .study-card,
+body.dark-theme .quiz-card {
+    background-color: #1e1e1e !important;
+    transition: none !important;
+    animation-name: none !important;
+    will-change: transform, opacity !important;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* 防止任何可能的闪白动画 */
+@media (prefers-color-scheme: dark) {
+    body.dark-theme * {
+        animation-duration: 0s !important;
+        transition-duration: 0s !important;
+    }
+}
+
+/* 使用绝对定位遮罩防止背景闪白 */
+body.dark-theme .study-container::before,
+body.dark-theme .quiz-container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #121212;
+    z-index: -1;
+}
+
+
+/* 彻底解决闪白问题 - 针对特定区域的修复 */
+body.dark-theme .tab-content,
+body.dark-theme .form-container,
+body.dark-theme .styled-form {
+    background-color: #1e1e1e !important;
+    border-color: #333 !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+    transition: none !important;
+    animation: none !important;
+    will-change: auto !important;
+}
+
+/* 确保卡片在深色模式下不会有过渡效果 */
+body.dark-theme .study-card,
+body.dark-theme .quiz-card,
+body.dark-theme * {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* 添加深色背景覆盖层，防止任何闪白区域 */
+body.dark-theme::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(18, 18, 18, 0.1);
+    pointer-events: none;
+    z-index: 9999;
+}

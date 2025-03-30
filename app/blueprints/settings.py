@@ -4,26 +4,24 @@ import requests
 import json
 import os
 import time  
+from flask import jsonify, request, current_app
+from webdav3.client import Client
+import datetime  
+import shutil  # 添加这一行
 
 settings_bp = Blueprint('settings', __name__)
 
+# 在index函数中添加WebDAV设置传递
 @settings_bp.route('/')
 def index():
     """设置页面"""
-    # 从配置文件或数据库加载设置
-    try:
-        with open('app/config/ai_settings.json', 'r') as f:
-            ai_settings = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        ai_settings = {
-            'model': 'gpt-3.5-turbo',
-            'api_key': '',
-            'api_base_url': 'https://api.openai.com/v1',
-            'temperature': 0.7,
-            'max_tokens': 2000
-        }
+    # 获取AI设置和WebDAV设置
+    ai_settings = get_ai_settings()
+    webdav_settings = get_webdav_settings()
     
-    return render_template('settings.html', ai_settings=ai_settings)
+    return render_template('settings.html', 
+                          ai_settings=ai_settings,
+                          webdav_settings=webdav_settings)
 
 @settings_bp.route('/save', methods=['POST'])
 def save_settings():
@@ -156,4 +154,251 @@ def generate_ai_words():
         
     except Exception as e:
         print(f"生成单词过程中发生错误: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)})
+    
+
+
+
+
+# 添加获取WebDAV设置的辅助函数
+def get_webdav_settings():
+    """获取WebDAV设置"""
+    settings_file = os.path.join('app', 'config', 'webdav_settings.json')
+    if os.path.exists(settings_file):
+        with open(settings_file, 'r') as f:
+            return json.load(f)
+    return None
+
+
+# 获取AI设置的辅助函数
+def get_ai_settings():
+    """获取AI设置"""
+    try:
+        with open('app/config/ai_settings.json', 'r') as f:
+            ai_settings = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        ai_settings = {
+            'model': 'gpt-3.5-turbo',
+            'api_key': '',
+            'api_base_url': 'https://api.openai.com/v1',
+            'temperature': 0.7,
+            'max_tokens': 2000
+        }
+    return ai_settings
+
+
+
+
+# 本地备份路由
+@settings_bp.route('/create_backup', methods=['POST'])
+def create_backup():
+    """创建本地数据库备份"""
+    try:
+        # 数据库路径
+        db_path = os.path.join('app', 'wordweb.db')
+        
+        # 确保数据库文件存在
+        if not os.path.exists(db_path):
+            return jsonify({'success': False, 'error': '数据库文件不存在'})
+        
+        # 创建带有时间戳的备份文件名
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_path = os.path.join('app', f'wordweb_{timestamp}.db.bak')
+        
+        # 复制数据库文件
+        shutil.copy2(db_path, backup_path)
+        
+        return jsonify({
+            'success': True, 
+            'backup_path': backup_path,
+            'message': f'备份已创建: {backup_path}'
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# WebDAV验证路由
+@settings_bp.route('/verify_webdav', methods=['POST'])
+def verify_webdav():
+    """验证WebDAV连接"""
+    try:
+        data = request.json
+        url = data.get('url')
+        username = data.get('username')
+        password = data.get('password')
+        
+        # 如果密码是掩码，则从存储的WebDAV设置中获取真实密码
+        if password == '••••••••':
+            stored_settings = get_webdav_settings()
+            if stored_settings and 'password' in stored_settings:
+                password = stored_settings['password']
+        
+        if not url or not username or not password:
+            return jsonify({'success': False, 'error': '请提供完整的WebDAV信息'})
+        
+        # 确保url以/结束
+        if not url.endswith('/'):
+            url += '/'
+        
+        # 配置WebDAV客户端
+        options = {
+            'webdav_hostname': url,
+            'webdav_login': username,
+            'webdav_password': password,
+            'webdav_timeout': 30
+        }
+        
+        client = Client(options)
+        
+        # 检查连接是否成功
+        if client.check():
+            # 尝试创建wordweb目录(如果不存在)
+            try:
+                if not client.check('wordweb'):
+                    client.mkdir('wordweb')
+            except:
+                # 如果创建目录失败，可能已经存在或权限不足
+                pass
+                
+            return jsonify({'success': True, 'message': 'WebDAV连接成功'})
+        else:
+            return jsonify({'success': False, 'error': 'WebDAV连接失败'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': f'WebDAV连接错误: {str(e)}'})
+# 保存WebDAV设置
+@settings_bp.route('/save_webdav', methods=['POST'])
+def save_webdav():
+    """保存WebDAV设置"""
+    try:
+        data = request.json
+        url = data.get('url')
+        username = data.get('username')
+        password = data.get('password')
+        
+        if not url or not username or not password:
+            return jsonify({'success': False, 'error': '请提供完整的WebDAV信息'})
+        
+        # 确保url以/结束
+        if not url.endswith('/'):
+            url += '/'
+        
+        # 创建设置对象
+        webdav_settings = {
+            'url': url,
+            'username': username,
+            'password': password
+        }
+        
+        # 确保目录存在
+        os.makedirs('app/config', exist_ok=True)
+        
+        # 保存设置
+        with open('app/config/webdav_settings.json', 'w') as f:
+            json.dump(webdav_settings, f, indent=4)
+        
+        return jsonify({'success': True, 'message': 'WebDAV设置已保存'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# 上传数据库到WebDAV
+@settings_bp.route('/upload_db', methods=['POST'])
+def upload_db():
+    """上传数据库到WebDAV服务器"""
+    try:
+        # 获取WebDAV设置
+        webdav_settings = get_webdav_settings()
+        if not webdav_settings:
+            return jsonify({'success': False, 'error': 'WebDAV设置不存在'})
+        
+        # 数据库路径
+        db_path = os.path.join('app', 'wordweb.db')
+        
+        # 确保数据库文件存在
+        if not os.path.exists(db_path):
+            return jsonify({'success': False, 'error': '数据库文件不存在'})
+        
+        # 配置WebDAV客户端
+        options = {
+            'webdav_hostname': webdav_settings['url'],
+            'webdav_login': webdav_settings['username'],
+            'webdav_password': webdav_settings['password'],
+            'webdav_timeout': 30
+        }
+        
+        client = Client(options)
+        
+        # 确保目标目录存在
+        try:
+            if not client.check('wordweb'):
+                client.mkdir('wordweb')
+        except:
+            # 如果创建目录失败，目录可能已存在
+            pass
+        
+        # 上传数据库文件
+        remote_path = 'wordweb/wordweb.db'
+        client.upload_sync(remote_path=remote_path, local_path=db_path)
+        
+        # 添加上传时间戳文件
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        timestamp_file = os.path.join('app', 'last_upload.txt')
+        
+        with open(timestamp_file, 'w') as f:
+            f.write(f'最后上传时间: {timestamp}')
+        
+        try:
+            client.upload_sync(remote_path='wordweb/last_upload.txt', local_path=timestamp_file)
+            os.remove(timestamp_file)  # 清理临时文件
+        except:
+            # 时间戳文件上传失败不影响主功能
+            pass
+        
+        return jsonify({'success': True, 'message': '数据库上传成功'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# 从WebDAV下载数据库
+@settings_bp.route('/download_db', methods=['POST'])
+def download_db():
+    """从WebDAV服务器下载数据库"""
+    try:
+        # 获取WebDAV设置
+        webdav_settings = get_webdav_settings()
+        if not webdav_settings:
+            return jsonify({'success': False, 'error': 'WebDAV设置不存在'})
+        
+        # 数据库路径
+        db_path = os.path.join('app', 'wordweb.db')
+        
+        # 先创建本地备份
+        backup_timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        backup_path = os.path.join('app', f'wordweb_before_download_{backup_timestamp}.db.bak')
+        
+        # 如果本地数据库存在，先备份
+        if os.path.exists(db_path):
+            shutil.copy2(db_path, backup_path)
+        
+        # 配置WebDAV客户端
+        options = {
+            'webdav_hostname': webdav_settings['url'],
+            'webdav_login': webdav_settings['username'],
+            'webdav_password': webdav_settings['password'],
+            'webdav_timeout': 30
+        }
+        
+        client = Client(options)
+        
+        # 检查远程文件是否存在
+        remote_path = 'wordweb/wordweb.db'
+        if not client.check(remote_path):
+            return jsonify({'success': False, 'error': '服务器上不存在数据库文件'})
+        
+        # 下载数据库文件
+        client.download_sync(remote_path=remote_path, local_path=db_path)
+        
+        return jsonify({
+            'success': True, 
+            'message': '数据库下载成功',
+            'backup_path': backup_path
+        })
+    except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
