@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+
+    
     <meta charset="UTF-8">
     <title>WordWeb - {% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -29,49 +32,147 @@
     </style>
 
 
-   <!-- 防止深色模式闪白的预加载样式 -->
-   <script>
-    // 立即应用已保存的主题设置，防止闪烁
-    (function() {
-        var savedTheme = localStorage.getItem('theme');
-        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        // 确定应该使用的主题
-        var useDarkTheme = false;
-        
-        if (savedTheme === 'dark') {
-            useDarkTheme = true;
-        } else if (savedTheme === 'auto') {
-            // 自动模式下，根据当前时间或系统偏好决定
-            var hours = new Date().getHours();
-            useDarkTheme = (hours < 6 || hours >= 18) || prefersDark;
+   <!-- 防止深色模式闪白 -->
+<script>
+(function() {
+  try {
+    var savedTheme = localStorage.getItem('wordweb_theme');
+    var currentHour = new Date().getHours();
+    
+    var shouldUseDarkTheme = 
+      savedTheme === 'dark' || 
+      (savedTheme === 'auto' && (currentHour >= 18 || currentHour < 6));
+    
+    if (shouldUseDarkTheme) {
+      document.documentElement.classList.add('dark-theme');
+      
+      var style = document.createElement('style');
+      style.textContent = `
+        html, body { 
+          background-color: #121212 !important; 
+          color: #e0e0e0 !important;
+     
         }
         
-        // 如果应该使用深色主题，立即添加深色主题类
-        if (useDarkTheme) {
-            document.documentElement.classList.add('dark-theme');
-            document.body.classList.add('dark-theme');
-            
-            // 通过内联样式立即设置背景色，不等待CSS加载
-            var style = document.createElement('style');
-            style.textContent = `
-                html, body { 
-                    background-color: #121212 !important; 
-                    transition: none !important;
-                }
-                .study-container, .quiz-container,
-                .study-card, .quiz-card {
-                    background-color: #1e1e1e !important;
-                    transition: none !important;
-                }
-            `;
-            document.head.appendChild(style);
+        /* 导航栏元素 */
+        nav, nav a, .brand, .nav-links {
+          background-color: #1e1e1e !important;
+          color: #e0e0e0 !important;
+          border-color: #333 !important;
+        
         }
-    })();
+        
+        /* 背诵模式元素 */
+        .study-container, .quiz-container,
+        
+        .keyboard-hint, .progress-container,
+        .navigation, .nav-left, .nav-right,
+         .btn-primary, .btn-success {
+          background-color: #121212 !important;
+          border-color: #333 !important;
+          color: #e0e0e0 !important;
+          
+         
+        }
+
+        .study-card, .quiz-card {
+          background-color: #1e1e1e !important;
+          border-color: #333 !important;
+          color: #e0e0e0 !important;
+        }
+      
+
+        /* 进度条专门处理 */
+        .progress-bar {
+        background: linear-gradient(90deg, #1a73e8, #4285f4) !important;
+        transition: none !important;
+        animation: none !important;
+        }
+
+        .progress-bar-wrapper {
+        background-color: #333 !important;
+        transition: none !important;
+        }
+
+        /* 进度显示文本特殊处理 */
+        .progress-status {
+        background-color: rgba(53, 53, 53, 0.7) !important;
+        color: #e0e0e0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        transition: none !important;
+        animation: none !important;
+        }
+
+        .progress-container, 
+        .progress-info {
+        background-color: transparent !important;
+        transition: none !important;
+        }
+
+      `;
+      document.head.appendChild(style);
+    }
+  } catch(e) {
+    console.error('主题预加载失败:', e);
+  }
+})();
 </script>
 
 
-
+<script>
+    (function() {
+      try {
+        const savedView = localStorage.getItem('wordweb_card_view');
+        if (savedView === 'compact') {
+          // 立即添加紧凑视图类到文档根元素
+          document.documentElement.classList.add('compact-view');
+          
+          // 添加内联样式以立即应用紧凑视图效果
+          var style = document.createElement('style');
+          style.textContent = `
+            .container {
+              min-height: 100vh;
+            }
+            .group-list {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+              gap: 12px !important;
+            }
+            .group-card {
+              height: 140px !important;
+              width: 140px !important;
+              padding: 10px !important;
+              position: relative !important;
+              perspective: 1000px !important;
+              margin: 0 auto !important;
+              overflow: visible !important;
+            }
+            .group-card p,
+            .group-card .stats,
+            .group-card .actions,
+            .group-card .card-badge {
+              display: none !important;
+            }
+            .group-card h2 {
+              font-size: 0.95rem !important;
+              text-align: center !important;
+              margin: 0 !important;
+              max-height: 120px !important;
+              overflow: hidden !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              width: 100% !important;
+            }
+          `;
+          document.head.appendChild(style);
+        }
+      } catch(e) {
+        console.error('紧凑视图预加载失败', e);
+      }
+    })();
+    </script>
 
 
 
@@ -114,12 +215,6 @@
 
 
 <script>
-
-
-
-
-
-
 
 // 当DOM加载完成后执行
 document.addEventListener('DOMContentLoaded', function() {

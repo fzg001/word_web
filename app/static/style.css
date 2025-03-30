@@ -15,7 +15,6 @@
 body.dark-theme {
     --background-color: #121212;
     --card-background: #1e1e1e;
-    --text-color: #e0e0e0;
     --secondary-text: #b0b0b0;
     --border-color: #333333;
     --shadow-color: rgba(0, 0, 0, 0.3);
@@ -64,23 +63,7 @@ nav a {
     border-color: var(--border-color);
 }
 
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 4px;
-}
 
-.alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-}
-
-.alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
 
 /* 组别卡片样式 */
 .group-list {
@@ -1062,13 +1045,6 @@ nav a:hover::after {
     opacity: 0.7;
 }
 
-/* 动画效果 */
-@keyframes card-wiggle {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-    100% { transform: translateX(0); }
-}
 
 .group-card.draggable:active {
     animation: card-wiggle 0.3s 1;
@@ -1553,19 +1529,6 @@ nav a:hover::after {
     display: none;
 }
 
-.theme-preview {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100px;
-    height: 80px;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    border: 2px solid var(--border-color);
-    transition: all 0.2s ease;
-    gap: 8px;
-}
 
 /* 浅色主题预览 */
 .theme-preview.light {
@@ -1620,33 +1583,8 @@ nav a:hover::after {
     background: none;
 }
 
-.auto-icon:before {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 14px;
-    left: 0;
-    top: 10%;
-    transform: translateY(-50%);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f39c12'%3E%3Cpath d='M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,6.65C6.9,7.16 6.36,7.78 5.94,8.5C5.5,9.24 5.25,10 5.11,10.79L3.34,7M3.36,17L5.12,13.23C5.26,14 5.53,14.78 5.95,15.5C6.37,16.24 6.91,16.86 7.5,17.37L3.36,17M20.65,7L18.88,10.79C18.74,10 18.47,9.23 18.05,8.5C17.63,7.78 17.1,7.15 16.5,6.64L20.65,7M20.64,17L16.5,17.36C17.09,16.85 17.62,16.22 18.04,15.5C18.46,14.77 18.73,14 18.87,13.21L20.64,17M12,22L9.59,18.56C10.33,18.83 11.14,19 12,19C12.82,19 13.63,18.83 14.37,18.56L12,22Z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-}
 
-.auto-icon:after {
-    content: '';
-    position: absolute;
-    width: 12px;
-    height: 14px;
-    right: 0;
-    top: 10%;
-    transform: translateY(-50%);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498db'%3E%3Cpath d='M17.75,4.09L15.22,6.03L16.13,9.09L13.5,7.28L10.87,9.09L11.78,6.03L9.25,4.09L12.44,4L13.5,1L14.56,4L17.75,4.09M21.25,11L19.61,12.25L20.2,14.23L18.5,13.06L16.8,14.23L17.39,12.25L15.75,11L17.81,10.95L18.5,9L19.19,10.95L21.25,11M18.97,15.95C19.8,15.87 20.69,17.05 20.16,17.8C19.84,18.25 19.5,18.67 19.08,19.07C15.17,23 8.84,23 4.94,19.07C1.03,15.17 1.03,8.83 4.94,4.93C5.34,4.53 5.76,4.17 6.21,3.85C6.96,3.32 8.14,4.21 8.06,5.04C7.79,7.9 8.75,10.87 10.95,13.06C13.14,15.26 16.1,16.22 18.97,15.95M17.33,17.97C14.5,17.81 11.7,16.64 9.53,14.5C7.36,12.31 6.2,9.5 6.04,6.68C3.23,9.82 3.34,14.64 6.35,17.66C9.37,20.67 14.19,20.78 17.33,17.97Z'/%3E%3C/svg%3E");
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+
 
 .theme-option input:checked + .theme-preview {
     border-color: var(--primary-color, #4285f4);
@@ -1747,27 +1685,6 @@ nav a:hover::after {
     z-index: 5;
 }
 
-/* 禁用排序模式下（排序模式 class 是 .sorting-mode）紧凑视图卡片的翻转 */
-.sorting-mode .compact-view .group-card .card-inner,
-.sorting-mode .compact-view .group-card:hover .card-inner {
-    transform: none !important;
-    transition: none !important;
-}
-/* 排序模式下确保卡片背面完全不可见 */
-.sorting-mode .card-back {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* 排序模式下确保卡片正面始终可见 */
-.sorting-mode .compact-view .card-front {
-    backface-visibility: visible !important;
-    transform: none !important;
-    position: relative !important;
-    display: flex !important;
-}
 
 
 
@@ -2210,33 +2127,6 @@ nav a.active {
     transform: translateY(-2px);
 }
 
-/* 命令结果样式 */
-.command-result {
-    padding: 20px;
-    text-align: center;
-}
-
-.command-title {
-    font-size: 14px;
-    color: var(--text-secondary, #666);
-    margin-bottom: 8px;
-}
-
-.command-action {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--primary-color, #4285f4);
-    margin-bottom: 10px;
-}
-
-.command-hint {
-    font-size: 12px;
-    color: var(--text-secondary, #666);
-    padding: 4px 8px;
-    background: #f1f3f4;
-    border-radius: 4px;
-    display: inline-block;
-}
 
 /* 暗色主题适配 */
 .dark-theme .search-shortcut,
@@ -2499,9 +2389,12 @@ body.dark-theme .btn.btn-secondary:hover:not(:disabled) {
     background-color: #444;
 }
 
-body.dark-theme .btn.btn-primary {
-    background-color: #1a73e8;
-    border-color: #1a73e8;
+body.dark-theme .btn.btn-primary,
+body.dark-theme .btn.btn-success {
+    background-color: #1a73e8 !important; /* 保持蓝色背景 */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    margin: 0 5px !important; /* 增加按钮间距 */
 }
 
 body.dark-theme .filter-btn-group,
@@ -2673,23 +2566,28 @@ body.dark-theme .theme-preview {
 
 /* 背诵和测试界面深色模式适配 */
 body.dark-theme .progress-container {
-    color: var(--text-color);
+    background-color: transparent !important; /* 移除黑块背景 */
+    color: var(--text-color) !important;
 }
+
+
 
 body.dark-theme .progress-bar-wrapper {
-    background: #333;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-}
-
-body.dark-theme .progress-bar {
-    background: linear-gradient(90deg, var(--primary-color, #4285f4), #5e97f6);
+    background-color: rgba(255, 255, 255, 0.1) !important; /* 更柔和的背景 */
+    box-shadow: none !important;
 }
 
 body.dark-theme .progress-status {
-    background: #333;
-    color: #e0e0e0;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    background-color: rgba(255, 255, 255, 0.07) !important; /* 半透明背景 */
+    color: #e0e0e0 !important;
+    box-shadow: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
+
+body.dark-theme .progress-label {
+    color: #aaa !important;
+}
+
 
 body.dark-theme .keyboard-hint {
     background: #333;
@@ -2715,7 +2613,7 @@ body.dark-theme .study-card p {
 body.dark-theme .nav-left .btn,
 body.dark-theme .nav-right .btn,
 body.dark-theme .quiz-actions .btn {
-    background-color: #333;
+    background-color: transparent !important; /* 移除背景 */
     border-color: #444;
     color: #eee;
 }
@@ -2727,17 +2625,11 @@ body.dark-theme .quiz-actions .btn:hover {
 }
 
 body.dark-theme .btn.disabled {
-    background-color: #333;
-    color: #777;
+    opacity: 0.5 !important;
+    background-color: #333 !important;
 }
 
-/* 修复status-text在深色模式下的显示问题 */
-body.dark-theme .status-text {
-    background-color: transparent;
-    color: #aaa;
-    border: none;
-    padding: 4px 8px;
-}
+
 
 /* 仅当有内容时才显示背景 */
 body.dark-theme .status-text:not(:empty) {
@@ -2761,30 +2653,7 @@ body.dark-theme .status-text:not(:empty) {
     text-align: center; /* 确保文字居中 */
 }
 
-/* 移除不需要的图标相关样式 */
-.theme-icon, .sun-icon, .moon-icon, .auto-icon {
-    display: none;
-}
 
-/* 修复背单词闪白问题 */
-body.dark-theme .study-container,
-body.dark-theme .quiz-container {
-    background-color: var(--background-color, #121212) !important;
-}
-
-body.dark-theme .study-card,
-body.dark-theme .quiz-card {
-    background-color: var(--card-background, #1e1e1e) !important;
-    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
-    /* 不要设置背景色的过渡效果，避免闪白 */
-}
-
-/* 确保所有卡片元素和容器在深色模式下不会过渡到白色 */
-body.dark-theme * {
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease !important;
-    transition-property: transform, box-shadow, opacity !important;
-    /* 明确排除背景色的过渡效果 */
-}
 
 /* 1. 修复按钮长度不一致问题 */
 #verify-webdav-btn, 
@@ -2797,29 +2666,6 @@ body.dark-theme * {
     justify-content: center;
 }
 
-/* 2. 修复深色模式下背诵和测试闪白问题 
-/* 完全禁止任何背景色的过渡效果 */
-* {
-    transition-property: transform, box-shadow, opacity !important;
-}
-
-body.dark-theme .study-container,
-body.dark-theme .quiz-container,
-body.dark-theme .quiz-form,
-body.dark-theme .study-card,
-body.dark-theme .quiz-card {
-    background-color: var(--card-background, #1e1e1e) !important;
-    transition: none !important;
-}
-
-/* 防止闪烁的更强力方法 */
-body.dark-theme .study-card,
-body.dark-theme .quiz-card {
-    -webkit-animation: none !important;
-    animation: none !important;
-    transition: none !important;
-    will-change: auto !important;
-}
 
 /* 3. 测试模式输入框深色模式适配 */
 body.dark-theme .quiz-form .form-control {
@@ -2893,98 +2739,12 @@ body.dark-theme .backup-row {
     justify-content: center !important;
 }
 
-/* 彻底解决深色模式闪白问题 */
-html.dark-theme, 
-body.dark-theme {
-    background-color: #121212 !important;
-    transition: none !important;
-    color-scheme: dark;
-}
-
-/* 确保所有重要元素在深色模式下不会有背景色过渡 */
-body.dark-theme div,
-body.dark-theme main,
-body.dark-theme section,
-body.dark-theme nav,
-body.dark-theme header,
-body.dark-theme footer,
-body.dark-theme .study-container,
-body.dark-theme .quiz-container,
-body.dark-theme .study-card,
-body.dark-theme .quiz-card,
-body.dark-theme .card-front,
-body.dark-theme .card-back,
-body.dark-theme form,
-body.dark-theme input,
-body.dark-theme textarea,
-body.dark-theme select {
-    background-color: inherit;
-    transition: none !important;
-    animation: none !important;
-}
-
-/* 确保卡片元素不会闪白 */
-body.dark-theme .study-card,
-body.dark-theme .quiz-card {
-    background-color: #1e1e1e !important;
-    transition: none !important;
-    animation-name: none !important;
-    will-change: transform, opacity !important;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-}
-
-/* 防止任何可能的闪白动画 */
-@media (prefers-color-scheme: dark) {
-    body.dark-theme * {
-        animation-duration: 0s !important;
-        transition-duration: 0s !important;
-    }
-}
-
-/* 使用绝对定位遮罩防止背景闪白 */
-body.dark-theme .study-container::before,
-body.dark-theme .quiz-container::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #121212;
-    z-index: -1;
-}
 
 
-/* 彻底解决闪白问题 - 针对特定区域的修复 */
-body.dark-theme .tab-content,
-body.dark-theme .form-container,
-body.dark-theme .styled-form {
-    background-color: #1e1e1e !important;
-    border-color: #333 !important;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
-    transition: none !important;
-    animation: none !important;
-    will-change: auto !important;
+
+
+
+.group-card p {
+    color: #000000;
 }
 
-/* 确保卡片在深色模式下不会有过渡效果 */
-body.dark-theme .study-card,
-body.dark-theme .quiz-card,
-body.dark-theme * {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-}
-
-/* 添加深色背景覆盖层，防止任何闪白区域 */
-body.dark-theme::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(18, 18, 18, 0.1);
-    pointer-events: none;
-    z-index: 9999;
-}

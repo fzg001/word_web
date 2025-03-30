@@ -529,12 +529,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (data.success) {
-                webdavStatus.textContent = "验证成功!";
+               
                 showMessage('WebDAV服务器验证成功!', 'success');
                 uploadDbBtn.disabled = false;
                 downloadDbBtn.disabled = false;
             } else {
-                webdavStatus.textContent = `验证失败: ${data.error}`;
+               
                 showMessage('验证失败: ' + data.error, 'danger');
                 uploadDbBtn.disabled = true;
                 downloadDbBtn.disabled = true;
