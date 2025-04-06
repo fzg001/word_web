@@ -503,12 +503,17 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const url = document.getElementById('webdav-url').value.trim();
         const username = document.getElementById('webdav-username').value.trim();
-        const password = document.getElementById('webdav-password').value;
+        let password = document.getElementById('webdav-password').value;
         
         if (!url || !username || !password) {
             webdavStatus.textContent = "请填写所有WebDAV信息";
             showMessage('请填写所有WebDAV信息', 'warning');
             return;
+        }
+        
+        // 检查密码是否是掩码，如果是则使用隐藏字段中的真实密码
+        if (password === '••••••••') {
+            password = document.getElementById('real-password').value;
         }
         
         webdavStatus.textContent = "正在验证...";
@@ -517,34 +522,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await fetch('/settings/verify_webdav', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    url: url,
-                    username: username,
-                    password: password
-                })
+                body: JSON.stringify({ url, username, password })
             });
             
             const data = await response.json();
             
             if (data.success) {
-               
-                showMessage('WebDAV服务器验证成功!', 'success');
+                webdavStatus.textContent = "连接成功！";
+                webdavStatus.className = "status-text text-success";
                 uploadDbBtn.disabled = false;
                 downloadDbBtn.disabled = false;
+                showMessage('WebDAV服务器连接成功', 'success');
             } else {
-               
-                showMessage('验证失败: ' + data.error, 'danger');
-                uploadDbBtn.disabled = true;
-                downloadDbBtn.disabled = true;
+                webdavStatus.textContent = `连接失败: ${data.error}`;
+                webdavStatus.className = "status-text text-danger";
+                showMessage('WebDAV连接失败: ' + data.error, 'danger');
             }
         } catch (error) {
-            webdavStatus.textContent = "验证过程中发生错误";
-            showMessage('验证过程中发生错误', 'danger');
+            webdavStatus.textContent = "连接过程中发生错误";
+            webdavStatus.className = "status-text text-danger";
+            showMessage('连接过程中发生错误', 'danger');
             console.error('WebDAV验证错误:', error);
-            uploadDbBtn.disabled = true;
-            downloadDbBtn.disabled = true;
         }
     });
     
@@ -554,7 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const url = document.getElementById('webdav-url').value.trim();
         const username = document.getElementById('webdav-username').value.trim();
-        const password = document.getElementById('webdav-password').value;
+        let password = document.getElementById('webdav-password').value;
         
         if (!url || !username || !password) {
             webdavStatus.textContent = "请填写所有WebDAV信息";
@@ -562,32 +562,39 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-
+        // 检查密码是否是掩码，如果是则使用隐藏字段中的真实密码
+        if (password === '••••••••') {
+            password = document.getElementById('real-password').value;
+        }
         
         try {
             const response = await fetch('/settings/save_webdav', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    url: url,
-                    username: username,
-                    password: password
-                })
+                body: JSON.stringify({ url, username, password })
             });
             
             const data = await response.json();
             
             if (data.success) {
-                showMessage('WebDAV设置已保存!', 'success');
+                webdavStatus.textContent = "设置已保存";
+                webdavStatus.className = "status-text text-success";
+                showMessage('WebDAV设置已保存', 'success');
+                
+                // 更新隐藏字段中的真实密码值，以便在页面刷新前仍能正确使用
+                document.getElementById('real-password').value = password;
             } else {
-  
+                webdavStatus.textContent = `保存失败: ${data.error}`;
+                webdavStatus.className = "status-text text-danger";
                 showMessage('保存失败: ' + data.error, 'danger');
             }
         } catch (error) {
+            webdavStatus.textContent = "保存过程中发生错误";
+            webdavStatus.className = "status-text text-danger";
             showMessage('保存过程中发生错误', 'danger');
-            console.error('WebDAV设置保存错误:', error);
+            console.error('保存WebDAV设置错误:', error);
         }
     });
     
