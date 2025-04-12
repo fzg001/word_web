@@ -34,8 +34,7 @@ WordWeb 不仅仅是一个单词学习工具，它是一个**智能词汇管理�
 ### AI生成单词
 ![AI生成单词功能展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/5afaeebac96d47115fa3e0c4512339b4.gif)
 
-### 全局搜索
-![全局搜索展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/539be41f6e2b561d6521df774cd3aff1.gif)
+
 
 </div>
 
