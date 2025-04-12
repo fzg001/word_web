@@ -2742,9 +2742,50 @@ body.dark-theme .backup-row {
 
 
 
-
-
 .group-card p {
     color: #000000;
+}
+
+/* 命令结果样式 - 修复全局搜索命令执行的显示问题 */
+.command-result {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--card-background);
+    border-radius: 6px;
+    margin: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.command-title {
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    font-weight: 500;
+}
+
+.command-action {
+    font-weight: 500;
+    font-size: 1.1rem;
+    color: var(--primary-color, #4285f4);
+    padding: 8px 0;
+}
+
+.command-hint {
+    font-size: 0.85rem;
+    color: var(--secondary-text);
+    opacity: 0.8;
+    padding-top: 5px;
+    border-top: 1px dotted var(--border-color);
+}
+
+/* 深色模式适配 */
+body.dark-theme .command-title,
+body.dark-theme .command-hint {
+    color: #aaa;
+}
+
+body.dark-theme .command-action {
+    color: #1a73e8;
 }
 

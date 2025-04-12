@@ -127,8 +127,6 @@
 
 <script>
 
-
-
 // 卡片选择排序功能
 document.addEventListener('DOMContentLoaded', function() {
     const toggleDragBtn = document.getElementById('toggle-drag-mode');
@@ -150,8 +148,10 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleDragBtn.textContent = '关闭卡片排序';
             toggleDragBtn.classList.add('btn-warning');
             toggleDragBtn.classList.remove('btn-secondary');
-            dragInstructions.style.display = 'block';
-            dragInstructions.textContent = '请先选择一张卡片，然后选择另一张卡片进行位置交换。';
+            // 隐藏原有指令区域
+            dragInstructions.style.display = 'none';
+            // 使用全局气泡通知
+            showMessage('请先选择一张卡片，然后选择另一张卡片进行位置交换', 'info');
             dragButtons.style.display = 'block';
             
             // 为所有卡片添加选择点击事件
@@ -201,12 +201,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // 第一次选择
             firstSelectedCard = clickedCard;
             firstSelectedCard.classList.add('card-selected');
-            dragInstructions.textContent = '已选择一张卡片，请选择另一张卡片进行交换。';
+            // 使用全局气泡通知
+            showMessage('已选择一张卡片，请选择另一张卡片进行交换', 'info');
         } else if (firstSelectedCard === clickedCard) {
             // 取消选择
             firstSelectedCard.classList.remove('card-selected');
             firstSelectedCard = null;
-            dragInstructions.textContent = '请选择一张卡片。';
+            // 使用全局气泡通知
+            showMessage('已取消选择，请重新选择一张卡片', 'info');
         } else {
             // 选择第二张卡片并交换位置
             clickedCard.classList.add('card-selected');
@@ -219,7 +221,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 清除选中状态
                 resetCardSelection();
                 
-                dragInstructions.textContent = '卡片交换完成！你可以继续选择卡片交换位置。';
+                // 使用全局气泡通知
+                showMessage('卡片交换完成！你可以继续选择卡片交换位置', 'success');
             }, 300);
         }
     });
@@ -308,10 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-
-
-
 
 // 添加筛选功能
 document.addEventListener('DOMContentLoaded', function() {
@@ -445,14 +444,6 @@ document.addEventListener('DOMContentLoaded', function() {
     } 
 
 });
-
-
-
-
-
-
-
-
 
 </script>
 {% endblock %}

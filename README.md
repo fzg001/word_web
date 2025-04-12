@@ -1,5 +1,8 @@
 # WordWeb - 单词学习管理系统
 
+
+![Docker Hub Pulls](https://img.shields.io/docker/pulls/rheshyike/wordweb?) ![Python](https://img.shields.io/badge/Python-14354C.svg?logo=python&logoColor=white)  ![Flask](https://img.shields.io/badge/Flask-000.svg?logo=flask&logoColor=white)  
+
 ## 项目简介
 
 WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在帮助用户高效地管理单词组、进行单词背诵和测试。用户可以创建、编辑和删除单词组，在背诵模式下逐个学习单词，还能通过顺序或乱序测试检验学习效果。系统会记录每个单词组的学习统计信息，如背诵次数、测试正确率等。在 v1.1.0 版本中，新增了 AI 大模型生成单词的功能，让用户可以更便捷地获取所需单词。
@@ -33,7 +36,6 @@ WordWeb 是一个基于 Flask 框架开发的单词学习管理系统，旨在�
 
 ![主页卡片展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/1abca16653d4bd62cddcaf75cbc1e97d.gif)
 
-![学习功能展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/a68822b2d897040cc540bfa4a00c777c.gif)
 
 ![AI生成单词功能展示](https://fzg-1324261000.cos.ap-nanjing.myqcloud.com/markdown/5afaeebac96d47115fa3e0c4512339b4.gif)
 
@@ -173,6 +175,7 @@ wordweb/                                     # 项目根目录
 本项目采用 MIT 许可证。
 
 
-
-
+## 已知问题
+1. 默认紧凑切换偶尔需要刷新才能生效
+2. 首页筛选后刷新有筛选前的残影闪过
 
