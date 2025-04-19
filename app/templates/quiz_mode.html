@@ -33,7 +33,16 @@
 
 <!-- 保持卡片样式一致 -->
 <div class="quiz-card">
-    <h2>{{ current_word.english }}</h2>
+    <h2 style="display: flex; align-items: center; gap: 10px;">
+        {{ current_word.english }}
+        <button type="button" id="speak-btn" title="朗读" style="background: none; border: none; cursor: pointer; padding: 0;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#4285f4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+        </button>
+    </h2>
     
     {% if test_completed %}
     <div class="space-placeholder"></div>
@@ -68,5 +77,44 @@
             </div>
         </form>
     {% endif %}
+    <script>
+        // 添加自动跳转脚本
+        document.addEventListener('keydown', function(event) {
+            // 监听回车键
+            if (event.key === 'Enter') {
+                window.location.href = "{{ url_for('practice.complete_quiz', group_id=group.id, mode=mode) }}";
+            }
+        });
+
+        // === 自动发音功能 ===
+        function speakWord(text) {
+            if (!window.speechSynthesis) return;
+            const utter = new window.SpeechSynthesisUtterance(text);
+            utter.lang = 'en-US';
+            utter.rate = 0.95;
+            utter.pitch = 1.0;
+            const voices = window.speechSynthesis.getVoices();
+            const enVoice = voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female'));
+            if (enVoice) utter.voice = enVoice;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utter);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 自动朗读当前单词
+            setTimeout(function() {
+                speakWord("{{ current_word.english|e }}");
+            }, 300);
+
+            // 喇叭按钮点击朗读
+            const speakBtn = document.getElementById('speak-btn');
+            if (speakBtn) {
+                speakBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    speakWord("{{ current_word.english|e }}");
+                });
+            }
+        });
+    </script>
 </div>
 {% endblock %}
